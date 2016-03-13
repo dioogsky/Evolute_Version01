@@ -24,8 +24,12 @@ function rect_new (positon_x,position_y,speed)
     	i = i+1
 		n = (i/360)*(2*PI)
 		n = math.cos(n)
-    	rect.x = rect.x + 2*n	
+    	if (rect ~= nil)then
+    		rect.x = rect.x + 2*n
     	--print(n)
+    	return true
+    	end	
+    	
 		return true
     end
     
@@ -33,7 +37,10 @@ function rect_new (positon_x,position_y,speed)
     	i = i+1
 		n = (i/360)*(2*PI)
 		n = math.cos(n)
-    	rect.x = rect.x - 2*n	
+		if (rect ~= nil)then
+    		rect.x = rect.x - 2*n
+    	return true
+    	end	
     	--print(n)
 		return true
     end

@@ -71,7 +71,9 @@ function player_new (positon_x,position_y,speed,r,g,b)
 	end
 	
 	function player:stop()		
-		Runtime:removeEventListener( "enterFrame", myListener )		
+		Runtime:removeEventListener( "enterFrame", myListener )
+		
+		Runtime:removeEventListener( "touch", myTouchListener  )		
 	end
 	
 	function player:speedDown()
