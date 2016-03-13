@@ -66,7 +66,7 @@ function scene:create( event )
 	
 	sceneGroup:insert(bg)
 
-    -- Initialize the scene here
+    -- Initialise the scene here
     -- Example: add display objects to "sceneGroup", add touch listeners, etc.
 end
 
@@ -91,9 +91,7 @@ function scene:show( event )
 		camera:setFocus(player1) -- Set the focus to the player
 		camera:track() -- Begin auto-tracking
     	    	
-    	--local buttonBack = display.newCircle(100,500,20,20)
     	
-    	--buttonBack:addEventListener("tap",showMenu)
     	
     	local rect1 = rect_new(display.contentCenterX,500,1)
     	transition.to( rect1, { alpha = 1,time = 250,delay = 50 })
@@ -137,9 +135,9 @@ function scene:show( event )
 		camera:add(tri2,1)
 		camera:add(wormHole1,1)
 		camera:add(wormHole2,1)
---		camera:add(sceneGroup)
+		
 				
-			
+		sceneGroup:insert(camera)	
 --		sceneGroup:insert(rect1)
 --		sceneGroup:insert(rect2)
 --		sceneGroup:insert(rect3)
@@ -151,7 +149,8 @@ function scene:show( event )
 --		sceneGroup:insert(tri2)
 --		sceneGroup:insert(wormHole1)
 --		sceneGroup:insert(wormHole2)		
-								
+--		camera:add(sceneGroup)						
+       
         function myTouchListener( event )
         	
    	 		if event.phase == "began" then 
@@ -176,8 +175,10 @@ function scene:show( event )
     	function myListener( event )
     		
     		rect1.move2()
-    		timer.performWithDelay ( 1000, rect2.move1 )
-   		    timer.performWithDelay ( 2100, rect3.move2 )
+    		rect2.move1()
+    		rect3.move2()
+    		--timer.performWithDelay ( 1000, rect2.move1 )
+   		    --timer.performWithDelay ( 2100, rect3.move2 )
    		    saw1.move2()
    		    saw1.rotate1()
    		    rect4.move1()
@@ -187,10 +188,7 @@ function scene:show( event )
    		    tri2.rotate1()  		    
     		player1.move1()
     		chaser1.move1()
-    		
-    		
-    		
-    		
+
     		player_x = player1.x
         	player_y = player1.y
     		
@@ -212,18 +210,26 @@ function scene:show( event )
 				print("wormHole!!")
 			end
 			
-			--if (self.myName == "saw") then	
---				self.myName = nil
---				player1.stop()
---				local failbg = display.newRect(display.contentCenterX,display.contentCenterY,375,667)
---				failbg:setFillColor(0.8,0,0,0.7)
---				local failtext = display.newImage("img/fail.png",display.contentCenterX,display.contentCenterY-100)
---				failtext.alpha = 0
---				transition.to( failtext, { alpha = 1,time = 800,delay = 200 })
---				print("hahahahaa")
---				buttonBack:toFront()								
---				
---			end
+			if (self.myName == "saw") then	
+				self.myName = nil
+				player1.stop()
+				local failbg = display.newRect(display.contentCenterX,display.contentCenterY,375,667)
+				failbg:setFillColor(0.8,0,0,0.7)
+				local failtext = display.newImage("img/fail.png",display.contentCenterX,display.contentCenterY-100)
+				failtext.alpha = 0
+				transition.to( failtext, { alpha = 1,time = 800,delay = 200 })
+				--print("hahahahaa")
+				local buttonBack = display.newCircle(100,500,20,20)
+				camera:insert(failbg)
+				camera:insert(failtext)	
+				camera:insert(buttonBack)
+				
+    			local function myBackListener()
+    				scene:destroy()
+    			end
+    			buttonBack:addEventListener("tap",myBackListener)								
+				
+			end
 			return true
 		end
 		
@@ -256,19 +262,22 @@ end
 function scene:hide( event )
 
     local sceneGroup = self.view
-    local phase = event.phase
-
-    if ( phase == "will" ) then
+    --local phase = event.phase
+	
+	
+    --if ( phase == "will" ) then
+        --camera:remove()
+        --camera:destroy()
+       
         -- Called when the scene is on screen (but is about to go off screen)
         -- Insert code here to "pause" the scene
         -- Example: stop timers, stop animation, stop audio, etc.
-    elseif ( phase == "did" ) then
-    	--sceneGroup:removeSelf()
---    	sceneGruop = nil
-		physics.stop()
+    --elseif ( phase == "did" ) then
+    	
+		
     	
         -- Called immediately after scene goes off screen
-    end
+    --end
 end
 
 
@@ -276,7 +285,13 @@ end
 function scene:destroy( event )
 
     local sceneGroup = self.view
-	camera:remove()
+    physics.stop()
+    camera:destroy()
+	--showMenu()
+	composer.gotoScene("scenes.menu")
+    sceneGroup:removeSelf()
+    sceneGruop = nil
+    
     -- Called prior to the removal of scene's view
     -- Insert code here to clean up the scene
     -- Example: remove display objects, save state, etc.
