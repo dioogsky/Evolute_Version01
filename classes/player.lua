@@ -16,6 +16,7 @@ function player_new (positon_x,position_y,speed,r,g,b)
 	player.orignspeed = speed
 	player.isSpeedUp = false
 	physics.addBody( player, { density=2, friction=0.5, bounce=0.3 } )
+	player.isStop = 0
 	
   
     function player:move1()
@@ -71,6 +72,7 @@ function player_new (positon_x,position_y,speed,r,g,b)
 	end
 	
 	function player:stop()		
+		player.isStop = 1
 		Runtime:removeEventListener( "enterFrame", myListener )
 		
 		Runtime:removeEventListener( "touch", myTouchListener  )		

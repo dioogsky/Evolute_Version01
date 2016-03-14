@@ -192,7 +192,7 @@ function scene:show( event )
     		player_x = player1.x
         	player_y = player1.y
     		
-   			if(player1.isSpeedUp == true) then
+   			if(player1.isSpeedUp == true and player1.isStop == 1) then
    				timer.performWithDelay ( 3000, player1.speedDown )
    			end
 			
@@ -288,9 +288,10 @@ function scene:destroy( event )
     physics.stop()
     camera:destroy()
 	--showMenu()
-	composer.gotoScene("scenes.menu")
-    sceneGroup:removeSelf()
+	sceneGroup:removeSelf()
     sceneGruop = nil
+	showMenu()
+    
     
     -- Called prior to the removal of scene's view
     -- Insert code here to clean up the scene
