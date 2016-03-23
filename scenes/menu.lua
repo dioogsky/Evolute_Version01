@@ -23,16 +23,20 @@ local function showScene1()
 		effect = 'crossFade',
 		time= 100
 	}
+	
+	--composer.removeScene( "scenes.scene1" )
+	
 	composer.gotoScene("scenes.scene1",options)
-
+	
 end
 
 		
 
 -- "scene:create()"
 function scene:create( event )
-
+	
     local sceneGroup = self.view
+    composer.removeScene('scenes.scene1')
 	local bg = display.newRect(display.contentCenterX,display.contentCenterY,375,677)
 	bg: setFillColor(0.93,0.93,0.93)
 	
@@ -119,7 +123,7 @@ end
 function scene:destroy( event )
 
     local sceneGroup = self.view
-		sceneGroup:removeSelf()
+	sceneGroup:removeSelf()
     -- Called prior to the removal of scene's view
     -- Insert code here to clean up the scene
     -- Example: remove display objects, save state, etc.

@@ -3,9 +3,6 @@
 -- scene1.lua
 --
 -----------------------------------------------------------------------------------------
-
--- Your code here
-
 display.setStatusBar(display.HiddenStatusBar)
 local composer = require( "composer" )
 --local perspective = require("perspective")
@@ -15,8 +12,8 @@ local tri = require('classes.tri')
 local wall = require('classes.wall')
 local wormHole = require('classes.wormHole')
 local player = require('classes.player')
-local player = require('classes.chaser')
-local player = require('classes.saw')
+local chaser = require('classes.chaser')
+local saw = require('classes.saw')
 local scene = composer.newScene()
 local physics = require("physics")
 local perspective = require("perspective")
@@ -24,12 +21,10 @@ local perspective = require("perspective")
 --local particleDesigner = require( "particleDesigner" )
 
 
-
+camera = perspective.createView()
+camera:setBounds(170, 205, 0, 2200)
 physics.start()
 physics.setGravity( 0, 0 )
-local camera = perspective.createView()
-camera:setBounds(170, 205, 0, 2200)
-
 
 -- -----------------------------------------------------------------------------------------------------------------
 -- All code outside of the listener functions will only be executed ONCE unless "composer.removeScene()" is called
@@ -49,13 +44,14 @@ local function showMenu()
 
 end
 
-
-
 -- "scene:create()"
 function scene:create( event )
 	
     local sceneGroup = self.view
-	local bg = display.newRect(display.contentCenterX,display.contentCenterY,375,677)
+    
+    composer.removeScene('scenes.menu')
+    
+	local bg = display.newRect(display.contentCenterX,display.contentCenterY,375,8000)
 	bg: setFillColor(0.93,0.93,0.93)	
     
     local wallLeft = wall_new(5,885)
@@ -65,6 +61,8 @@ function scene:create( event )
 	camera:add(wallRight,1)
 	
 	sceneGroup:insert(bg)
+	sceneGroup:insert(wallLeft)
+	sceneGroup:insert(wallRight)
 
     -- Initialise the scene here
     -- Example: add display objects to "sceneGroup", add touch listeners, etc.
@@ -85,6 +83,7 @@ function scene:show( event )
     	local player1 = player_new(display.contentCenterX,display.contentCenterY,2,0.38,0.38,0.38)
 		
 		camera:add(player1, 1) -- Add player to layer 1 of the camera
+		camera:setFocus(player1)
 		camera:prependLayer()
     	
     	camera.damping = 10 -- A bit more fluid tracking
@@ -137,19 +136,21 @@ function scene:show( event )
 		camera:add(wormHole2,1)
 		
 				
-		sceneGroup:insert(camera)	
---		sceneGroup:insert(rect1)
---		sceneGroup:insert(rect2)
---		sceneGroup:insert(rect3)
---		sceneGroup:insert(saw1)
---		sceneGroup:insert(rect4)
---		sceneGroup:insert(rect5)
---		sceneGroup:insert(rect6)
---		sceneGroup:insert(tri1)
---		sceneGroup:insert(tri2)
---		sceneGroup:insert(wormHole1)
---		sceneGroup:insert(wormHole2)		
---		camera:add(sceneGroup)						
+	
+		sceneGroup:insert(rect1)
+		sceneGroup:insert(rect2)
+		sceneGroup:insert(rect3)
+		sceneGroup:insert(saw1)
+		sceneGroup:insert(rect4)
+		sceneGroup:insert(rect5)
+		sceneGroup:insert(rect6)
+		sceneGroup:insert(tri1)
+		sceneGroup:insert(tri2)
+		sceneGroup:insert(wormHole1)
+		sceneGroup:insert(wormHole2)
+		sceneGroup:insert(player1)
+		sceneGroup:insert(chaser1)		
+		camera:add(sceneGroup)						
        
         function myTouchListener( event )
         	
@@ -220,12 +221,21 @@ function scene:show( event )
 				transition.to( failtext, { alpha = 1,time = 800,delay = 200 })
 				--print("hahahahaa")
 				local buttonBack = display.newCircle(100,500,20,20)
-				camera:insert(failbg)
-				camera:insert(failtext)	
-				camera:insert(buttonBack)
+				
+				camera:add(failbg)
+				camera:add(failtext)
+				camera:add(buttonBack)
+				
+				sceneGroup:insert(failbg)
+				sceneGroup:insert(failtext)	
+				sceneGroup:insert(buttonBack)
 				
     			local function myBackListener()
-    				scene:destroy()
+    				showMenu()
+					Runtime:removeEventListener( "touch", myTouchListener )
+					Runtime:removeEventListener( "enterFrame", myListener )
+					physics.stop()
+					camera:destroy()
     			end
     			buttonBack:addEventListener("tap",myBackListener)								
 				
@@ -285,12 +295,18 @@ end
 function scene:destroy( event )
 
     local sceneGroup = self.view
-    physics.stop()
-    camera:destroy()
-	--showMenu()
-	sceneGroup:removeSelf()
-    sceneGruop = nil
-	showMenu()
+--  Runtime:removeEventListener( "touch", myTouchListener )
+--  Runtime:removeEventListener( "enterFrame", myListener )
+--  physics.stop()
+--
+--  camera:removeSelf()
+--  camera:destroy()
+--	showMenu()
+--	sceneGroup:removeSelf()
+--  sceneGruop = nil
+--	showMenu()
+    
+	
     
     
     -- Called prior to the removal of scene's view
