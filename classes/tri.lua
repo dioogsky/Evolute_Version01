@@ -40,7 +40,7 @@ function tri_new (positon_x,position_y,speed)
     
 	function tri:rotate1()
 	if(tri.myName ~= nil) then
-    	tri:rotate(2)
+    	tri:rotate(speed)
     end	
 	end
 	

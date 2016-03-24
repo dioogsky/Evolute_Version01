@@ -179,8 +179,8 @@ function scene:show( event )
     		rect2.move1()
     		saw1.move1()
     		saw1.rotate1()
-    		--timer.performWithDelay ( 1000, rect2.move1 )
-   		    --timer.performWithDelay ( 2100, rect3.move2 )
+--  		timer.performWithDelay ( 1000, rect2.move1 )
+--			timer.performWithDelay ( 2100, rect3.move2 )
    		    saw2.move2()
    		    saw2.rotate1()
    		    rect4.move1()
@@ -194,15 +194,16 @@ function scene:show( event )
     		player_x = player1.x
         	player_y = player1.y
     		
-   			if( player1.isSpeedUp == true and player1.isStop == 0 ) then
-   				timer.performWithDelay ( 3000, player1.speedDown )
+   			if( player1.isSpeedUp == 1 and player1.isStop == 0 ) then
+   				timer.performWithDelay ( 6000, player1.speedDown() )
    			end
 			
 		end
 		
 		function onLocalPostCollision( self, event )
 			
-			if (self.myName == "tri") then					
+			if (self.myName == "tri" and event.other.name == "player") then	
+				print(event.target.name)				
 				self:removeSelf()
 				self.myName = nil
 				player1.speedUp()
@@ -212,7 +213,7 @@ function scene:show( event )
 				print("wormHole!!")
 			end
 			
-			if (self.myName == "saw") then	
+			if (self.myName == "saw" and event.other.name == "player") then	
 				self.myName = nil
 				player1.stop()
 				
@@ -241,21 +242,19 @@ function scene:show( event )
     				failtext = nil
     				buttonBack:removeSelf()
     				buttonBack = nil
+    				dist_x = nil
+   	 				dist_y = nil  
     				
     				showMenu()
 					Runtime:removeEventListener( "touch", myTouchListener )
 					Runtime:removeEventListener( "enterFrame", myListener )
 					physics.stop()
 					camera:destroy()
-    			end
-    			buttonBack:addEventListener("tap",myBackListener)								
-				
+    			end    			
+    			buttonBack:addEventListener("tap",myBackListener)												
 			end
 			return true
-		end
-		
-		
-		
+		end		
 		
 		tri1.postCollision = onLocalPostCollision
 		tri1:addEventListener( "postCollision", tri1 )
@@ -265,8 +264,14 @@ function scene:show( event )
 		wormHole1.postCollision = onLocalPostCollision
 		wormHole1:addEventListener( "postCollision", wormHole1 )
 		
+		wormHole2.postCollision = onLocalPostCollision
+		wormHole2:addEventListener( "postCollision", wormHole1 )
+		
 		saw1.postCollision = onLocalPostCollision
 		saw1:addEventListener( "postCollision", saw1 )
+		
+		saw2.postCollision = onLocalPostCollision
+		saw2:addEventListener( "postCollision", saw2 )
 		
 		Runtime:addEventListener( "touch", myTouchListener )
 		

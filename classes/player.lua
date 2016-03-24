@@ -13,8 +13,10 @@ function player_new (positon_x,position_y,speed,r,g,b)
     player: setFillColor(r,g,b)
 	player.anchorX = 0.5 -- Slightly more "realistic" than center-point rotating
 	player.speed = speed
+	player.name = "player"
 	player.orignspeed = speed
-	player.isSpeedUp = false
+	player.isSpeedUp = 0
+	player.isStop = 0
 	physics.addBody( player, { density=2, friction=0.5, bounce=0.3 } )
 
 	
@@ -67,7 +69,7 @@ function player_new (positon_x,position_y,speed,r,g,b)
 		player.orignspeed = player.speed
 		player.speed = 1.4 * player.speed
 		player:setFillColor(math.random(1),0.5,0)
-		player.isSpeedUp = true
+		player.isSpeedUp = 1
 		print("speed up!!!")
 		print(player.speed)
 		return true
@@ -81,14 +83,14 @@ function player_new (positon_x,position_y,speed,r,g,b)
 	end
 	
 	function player:speedDown()
-		--print("down")
+		print("speed down!")
 		player.speed = player.orignspeed
 		print(player.speed)
 		print(player)
 		if (player ~= nil) then
 			player:setFillColor(0.38,0.38,0.38)
 		end
-		player.isSpeedUp = false
+		player.isSpeedUp = 0
 		return true
 	end
 	
