@@ -51,7 +51,7 @@ function scene:create( event )
     
     composer.removeScene('scenes.menu')
     
-	local bg = display.newRect(display.contentCenterX,display.contentCenterY,375,8000)
+	local bg = display.newRect(display.contentCenterX,display.contentCenterY,450,8000)
 	bg: setFillColor(0.93,0.93,0.93)	
     
     local wallLeft = wall_new(5,885)
@@ -135,8 +135,6 @@ function scene:show( event )
 		camera:add(wormHole1,1)
 		camera:add(wormHole2,1)
 		
-				
-	
 		sceneGroup:insert(rect1)
 		sceneGroup:insert(rect2)
 		sceneGroup:insert(rect3)
@@ -193,7 +191,7 @@ function scene:show( event )
     		player_x = player1.x
         	player_y = player1.y
     		
-   			if(player1.isSpeedUp == true and player1.isStop == 1) then
+   			if( player1.isSpeedUp == true and player1.isStop == 0 ) then
    				timer.performWithDelay ( 3000, player1.speedDown )
    			end
 			
@@ -214,12 +212,12 @@ function scene:show( event )
 			if (self.myName == "saw") then	
 				self.myName = nil
 				player1.stop()
+				
 				local failbg = display.newRect(display.contentCenterX,display.contentCenterY,375,667)
 				failbg:setFillColor(0.8,0,0,0.7)
 				local failtext = display.newImage("img/fail.png",display.contentCenterX,display.contentCenterY-100)
 				failtext.alpha = 0
 				transition.to( failtext, { alpha = 1,time = 800,delay = 200 })
-				--print("hahahahaa")
 				local buttonBack = display.newCircle(100,500,20,20)
 				
 				camera:add(failbg)
@@ -295,18 +293,6 @@ end
 function scene:destroy( event )
 
     local sceneGroup = self.view
---  Runtime:removeEventListener( "touch", myTouchListener )
---  Runtime:removeEventListener( "enterFrame", myListener )
---  physics.stop()
---
---  camera:removeSelf()
---  camera:destroy()
---	showMenu()
---	sceneGroup:removeSelf()
---  sceneGruop = nil
---	showMenu()
-    
-	
     
     
     -- Called prior to the removal of scene's view

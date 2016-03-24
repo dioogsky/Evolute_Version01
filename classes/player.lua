@@ -16,7 +16,7 @@ function player_new (positon_x,position_y,speed,r,g,b)
 	player.orignspeed = speed
 	player.isSpeedUp = false
 	physics.addBody( player, { density=2, friction=0.5, bounce=0.3 } )
-	player.isStop = 0
+
 	
 
 	
@@ -83,7 +83,11 @@ function player_new (positon_x,position_y,speed,r,g,b)
 	function player:speedDown()
 		--print("down")
 		player.speed = player.orignspeed
-		player:setFillColor(0.38,0.38,0.38)
+		print(player.speed)
+		print(player)
+		if (player ~= nil) then
+			player:setFillColor(0.38,0.38,0.38)
+		end
 		player.isSpeedUp = false
 		return true
 	end

@@ -40,6 +40,8 @@ function scene:create( event )
 	local bg = display.newRect(display.contentCenterX,display.contentCenterY,375,677)
 	bg: setFillColor(0.93,0.93,0.93)
 	
+	local text1 = display.newImage('img/Departure.png', display.contentCenterX, 165)
+	
 	level1Button = display.newImage('img/level1.png',70,250)
 	level1Button.name = "level1_Button"
 	level1Button.alpha = 0
