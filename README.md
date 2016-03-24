@@ -6,6 +6,6 @@
 
  I used a open source library "perspective" to control the camera.
  
- I will implement an enemy AI system, but it's really hard. I may use jumper library which was developed by Standford. You can find it on github.
+ I will implement an enemy AI system, but it's really hard. I may use jumper library which was developed by MIT. You can find it on github.
 
  I'm a newbie...whatever, I believe I can make it.
