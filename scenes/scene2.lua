@@ -54,8 +54,8 @@ function scene:create( event )
 	local bg = display.newRect(display.contentCenterX,display.contentCenterY,450,8000)
 	bg: setFillColor(0.93,0.93,0.93)	
     
-    local wallLeft = wall_new(5,885)
-    local wallRight = wall_new(373, 885)
+    local wallLeft = wall_new(5,600)
+    local wallRight = wall_new(373, 600)
 
 	camera:add(wallLeft,1)
 	camera:add(wallRight,1)
@@ -84,6 +84,14 @@ function scene:show( event )
     	physics.addBody( wallUp,'static', { density=20, friction=0.5, bounce=0.3 } )
 		wallUp: setFillColor(0,0,0,0)
 		wallUp.myName = "wallUp"
+		
+		local missionPoint = display.newImage('img/missionPoint.png',display.contentCenterX,1660)
+		local missionPointTrigger = display.newRect(display.contentCenterX,1660,400,10)
+		missionPointTrigger:setFillColor(0,0,0,0)
+    	physics.addBody( missionPointTrigger,'static', { density=20, friction=0.5, bounce=0.3 } )
+		missionPointTrigger.myName = "missionPointTrigger"
+		sceneGroup:insert(missionPoint)	
+		sceneGroup:insert(missionPointTrigger)
     	
     	local player1 = player_new(display.contentCenterX,display.contentCenterY,2,0.38,0.38,0.38)
 		
@@ -95,18 +103,14 @@ function scene:show( event )
 		camera:setFocus(player1) -- Set the focus to the player
 		camera:track() -- Begin auto-tracking
     	    	
-    	
-    	
     	local rect1 = rect_new(display.contentCenterX,500,1)
     	transition.to( rect1, { alpha = 1,time = 250,delay = 50 })
 
 		local rect2 = rect_new(display.contentCenterX,600,1)
 		transition.to( rect2, { alpha = 1,time = 250,delay = 150 })
 	
-		
 		local saw1 = saw_new(display.contentCenterX,700,20)
 		transition.to( saw1, { alpha = 1,time = 250,delay = 250 })
-		
 		
 		local saw2 = saw_new(display.contentCenterX,800,20)
 		transition.to( saw1, { alpha = 1,time = 250,delay = 350 })
@@ -265,8 +269,45 @@ function scene:show( event )
     			end    			
     			buttonBack:addEventListener("tap",myBackListener)												
 			end
+			
+			if (self.myName == "missionPointTrigger" and event.other.name == "player" ) then									
+				self.myName = nil
+				player1.stop()
+				
+				local successbg = display.newRect(display.contentCenterX,display.contentCenterY,375,667)
+				successbg:setFillColor(0.53,0.85,0.16,0.7)
+				local successText = display.newImage("img/success.png",display.contentCenterX,display.contentCenterY-100)
+				successText.alpha = 0
+				transition.to( successText, { alpha = 1,time = 800,delay = 200 })
+				
+				local buttonBack = display.newImage("img/backButton.png",80,500)
+				buttonBack.alpha = 0
+				transition.to( buttonBack, { alpha = 1,time = 800,delay = 300 })
+			
+    			local function myBackListener()
+    				successbg:removeSelf()
+    				successbg = nil
+    				successText:removeSelf()
+    				successText = nil
+    				
+    				buttonBack:removeSelf()
+    				buttonBack = nil
+    				dist_x = nil
+   	 				dist_y = nil      				
+    				showMenu()
+					Runtime:removeEventListener( "touch", myTouchListener )
+					Runtime:removeEventListener( "enterFrame", myListener )
+					physics.stop()
+					camera:destroy()
+    			end    			
+    			buttonBack:addEventListener("tap",myBackListener)												
+			end
+						
 			return true
-		end		
+		end	
+		
+			
+			
 		
 		tri1.postCollision = onLocalPostCollision
 		tri1:addEventListener( "postCollision", tri1 )
@@ -287,6 +328,9 @@ function scene:show( event )
 		
 		saw2.postCollision = onLocalPostCollision
 		saw2:addEventListener( "postCollision", saw2 )
+		
+		missionPointTrigger.postCollision = onLocalPostCollision
+		missionPointTrigger:addEventListener( "postCollision", missionPointTrigger )
 		
 		Runtime:addEventListener( "touch", myTouchListener )
 		

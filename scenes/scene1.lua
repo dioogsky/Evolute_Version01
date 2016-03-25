@@ -86,6 +86,14 @@ function scene:show( event )
 		wallUp: setFillColor(0,0,0,0)
 		wallUp.myName = "wallUp"
 		
+		local missionPoint = display.newImage('img/missionPoint.png',display.contentCenterX,1660)
+		local missionPointTrigger = display.newRect(display.contentCenterX,1660,400,10)
+		missionPointTrigger:setFillColor(0,0,0,0)
+    	physics.addBody( missionPointTrigger,'static', { density=20, friction=0.5, bounce=0.3 } )
+		missionPointTrigger.myName = "missionPointTrigger"
+		sceneGroup:insert(missionPoint)	
+		sceneGroup:insert(missionPointTrigger)
+		
     	local player1 = player_new(display.contentCenterX,display.contentCenterY,2,0.38,0.38,0.38)
 		
 		camera:add(player1, 1) -- Add player to layer 1 of the camera
@@ -145,7 +153,41 @@ function scene:show( event )
 		end
 		
 		function onLocalPostCollision( self, event )
-					
+				
+			if (self.myName == "missionPointTrigger") then									
+				self.myName = nil
+				player1.stop()
+				
+				local successbg = display.newRect(display.contentCenterX,display.contentCenterY,375,667)
+				successbg:setFillColor(0.53,0.85,0.16,0.7)
+				local successText = display.newImage("img/success.png",display.contentCenterX,display.contentCenterY-100)
+				successText.alpha = 0
+				transition.to( successText, { alpha = 1,time = 800,delay = 200 })
+				
+				local buttonBack = display.newImage("img/backButton.png",80,500)
+				buttonBack.alpha = 0
+				transition.to( buttonBack, { alpha = 1,time = 800,delay = 300 })
+			
+    			local function myBackListener()
+    				successbg:removeSelf()
+    				successbg = nil
+    				successText:removeSelf()
+    				successText = nil
+    				
+    				buttonBack:removeSelf()
+    				buttonBack = nil
+    				dist_x = nil
+   	 				dist_y = nil      				
+    				showMenu()
+					Runtime:removeEventListener( "touch", myTouchListener )
+					Runtime:removeEventListener( "enterFrame", myListener )
+					physics.stop()
+					camera:destroy()
+    			end    			
+    			buttonBack:addEventListener("tap",myBackListener)												
+			end
+				
+		
 			if (self.myName == "tri") then					
 				self:removeSelf()
 				self.myName = nil
@@ -156,7 +198,6 @@ function scene:show( event )
 				local warning = display.newText("You can't go back, commander.",display.contentCenterX, 250 )
 				warning:setFillColor(0.7,0.7,0.7,1)
 				timer.performWithDelay ( 1000, transition.to( warning, { time=1000, alpha=0 } ) )
-				
 			end
 			
 			
@@ -171,6 +212,9 @@ function scene:show( event )
 		
 		wallUp.postCollision = onLocalPostCollision
 		wallUp:addEventListener( "postCollision", wallUp )
+		
+		missionPointTrigger.postCollision = onLocalPostCollision
+		missionPointTrigger:addEventListener( "postCollision", missionPointTrigger )
 		
 		Runtime:addEventListener( "touch", myTouchListener )		
 		Runtime:addEventListener( "enterFrame", myListener )
