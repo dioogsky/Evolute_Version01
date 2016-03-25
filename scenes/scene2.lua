@@ -80,6 +80,11 @@ function scene:show( event )
     -- Called when the scene is still off screen (but is about to come on screen)
     elseif ( phase == "did" ) then
     	
+    	local wallUp = display.newRect(display.contentCenterX,0,346,20)
+    	physics.addBody( wallUp,'static', { density=20, friction=0.5, bounce=0.3 } )
+		wallUp: setFillColor(0,0,0,0)
+		wallUp.myName = "wallUp"
+    	
     	local player1 = player_new(display.contentCenterX,display.contentCenterY,2,0.38,0.38,0.38)
 		
 		camera:add(player1, 1) -- Add player to layer 1 of the camera
@@ -195,12 +200,19 @@ function scene:show( event )
         	player_y = player1.y
     		
    			if( player1.isSpeedUp == 1 and player1.isStop == 0 ) then
-   				timer.performWithDelay ( 6000, player1.speedDown() )
+   				timer.performWithDelay ( 3000, player1.speedDown )
    			end
 			
 		end
 		
 		function onLocalPostCollision( self, event )
+			
+			if (self.myName == "wallUp" and event.other.name == "player") then					
+				local warning = display.newText("You can't go back, commander.",display.contentCenterX, 250 )
+				warning:setFillColor(0.7,0.7,0.7,1)
+				timer.performWithDelay ( 1000, transition.to( warning, { time=1000, alpha=0 } ) )
+				
+			end
 			
 			if (self.myName == "tri" and event.other.name == "player") then	
 				print(event.target.name)				
@@ -260,6 +272,9 @@ function scene:show( event )
 		tri1:addEventListener( "postCollision", tri1 )
 		tri2.postCollision = onLocalPostCollision
 		tri2:addEventListener( "postCollision", tri2 )
+		
+		wallUp.postCollision = onLocalPostCollision
+		wallUp:addEventListener( "postCollision", wallUp )
 		
 		wormHole1.postCollision = onLocalPostCollision
 		wormHole1:addEventListener( "postCollision", wormHole1 )

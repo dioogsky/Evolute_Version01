@@ -54,11 +54,12 @@ function scene:create( event )
 	local bg = display.newRect(display.contentCenterX,display.contentCenterY,450,8000)
 	bg: setFillColor(0.93,0.93,0.93)	
     
-    local wallLeft = wall_new(5,885)
-    local wallRight = wall_new(373, 885)
-
+    local wallLeft = wall_new(5,600)
+    local wallRight = wall_new(373, 600)
+    
 	camera:add(wallLeft,1)
 	camera:add(wallRight,1)
+	
 	
 	sceneGroup:insert(bg)
 	sceneGroup:insert(wallLeft)
@@ -80,6 +81,11 @@ function scene:show( event )
     -- Called when the scene is still off screen (but is about to come on screen)
     elseif ( phase == "did" ) then
     	
+    	local wallUp = display.newRect(display.contentCenterX,0,346,20)
+    	physics.addBody( wallUp,'static', { density=20, friction=0.5, bounce=0.3 } )
+		wallUp: setFillColor(0,0,0,0)
+		wallUp.myName = "wallUp"
+		
     	local player1 = player_new(display.contentCenterX,display.contentCenterY,2,0.38,0.38,0.38)
 		
 		camera:add(player1, 1) -- Add player to layer 1 of the camera
@@ -92,14 +98,10 @@ function scene:show( event )
     	
     	local tri = {}    	
 		for i=1,8 do
-			tri[i] = tri_new(math.random(1,10)*35,200*i,math.random(2,5))
+			tri[i] = tri_new(math.random(2,9)*35,200*i,math.random(2,5))
 			camera:add(tri[i],1)
 			sceneGroup:insert(tri[i])
 		end
-
-		
-
-		
 
 		sceneGroup:insert(player1)	
 		camera:add(sceneGroup)						
@@ -109,7 +111,7 @@ function scene:show( event )
    	 		if event.phase == "began" then 
    	 		touch_x = event.x
    	 		touch_y = event.y      
-        	--eliminate the camera damping for getting an excatly touch coordination
+        	--eliminate the camera damping via getting an excatly touch coordination
         	if(event.x - display.contentCenterY <= 0) then
             	xSide = event.x - player1.x
             	ySide = event.y - display.contentCenterY
@@ -117,8 +119,8 @@ function scene:show( event )
             	xSide = event.x - player1.x
             	ySide = event.y - display.contentCenterY
         	end
-        	
-        	local k = xSide/ySide
+        	print(player1.y)
+        	local k = xSide/ySide        	
         	dist_x= player1.speed*k/(math.sqrt(k*k+1))
         	dist_y= player1.speed/(math.sqrt(k*k+1))
 
@@ -137,21 +139,26 @@ function scene:show( event )
         	player_y = player1.y
     		
    			if( player1.isSpeedUp == 1 and player1.isStop == 0 ) then   				
-   				  timer.performWithDelay ( 2000, player1.speedDown )
+   				  timer.performWithDelay ( 1500, player1.speedDown,1 )
    			end
 			
 		end
 		
 		function onLocalPostCollision( self, event )
-			
+					
 			if (self.myName == "tri") then					
 				self:removeSelf()
 				self.myName = nil
-				if(player1.isSpeedUp == 0) then
-					player1.speedUp()
-				else timer.performWithDelay ( 2000, player1.speedDown )
-				end
+				timer.performWithDelay ( 1, player1.speedUp )
 			end
+			
+			if (self.myName == "wallUp") then					
+				local warning = display.newText("You can't go back, commander.",display.contentCenterX, 250 )
+				warning:setFillColor(0.7,0.7,0.7,1)
+				timer.performWithDelay ( 1000, transition.to( warning, { time=1000, alpha=0 } ) )
+				
+			end
+			
 			
 			return true
 		end
@@ -162,9 +169,10 @@ function scene:show( event )
 			tri[i]:addEventListener( "postCollision", tri[i] )
 		end
 		
+		wallUp.postCollision = onLocalPostCollision
+		wallUp:addEventListener( "postCollision", wallUp )
 		
-		Runtime:addEventListener( "touch", myTouchListener )
-		
+		Runtime:addEventListener( "touch", myTouchListener )		
 		Runtime:addEventListener( "enterFrame", myListener )
 		
 -- Example: start timers, begin animation, play audio, etc.
