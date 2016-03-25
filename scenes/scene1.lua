@@ -110,6 +110,14 @@ function scene:show( event )
 			camera:add(tri[i],1)
 			sceneGroup:insert(tri[i])
 		end
+		
+		local rect = {}    	
+		for i=1,8 do
+			rect[i] = rect_new(display.contentCenterX,i*170,1)
+			transition.to( rect[i], { alpha = 1,time = 250,delay = 100*i })
+			camera:add(rect[i],1)
+			sceneGroup:insert(rect[i])
+		end
 
 		sceneGroup:insert(player1)	
 		camera:add(sceneGroup)						
@@ -138,8 +146,16 @@ function scene:show( event )
     	function myListener( event )
     	
    			for i=1,8 do
-				tri[i].rotate1()
-			end 		    
+				tri[i].rotate1()	
+			end 		
+			
+			for i=1,8 do
+				if (i%2 == 0)then
+					rect[i].move1()
+				else
+					rect[i].move2()
+				end
+			end	    
     		
     		player1.move1()
     		
