@@ -129,7 +129,9 @@ function scene:show( event )
 		local tri2 = tri_new(200,750,5)
 		
 		local wormHole1 = wormHole_new(365,500)
+		wormHole1.myName = "wormHole1"
 		local wormHole2 = wormHole_new(365,1200)
+		wormHole2.myName = "wormHole2"
 			
 		local chaser1 = chaser_new(display.contentCenterX,display.contentCenterY-100,2.4)
 		
@@ -225,8 +227,14 @@ function scene:show( event )
 				player1.speedUp()
 			end
 			
-			if (self.myName == "wormHole") then	
-				print("wormHole!!")
+			if (self.myName == "wormHole1") then	
+				local translateObject = function()  event.other.x = 300 event.other.y = 1200 end
+				timer.performWithDelay(1,translateObject,1)	
+			end
+			
+			if (self.myName == "wormHole2") then	
+				local translateObject = function()  event.other.x = 300 event.other.y = 500 end
+				timer.performWithDelay(1,translateObject,1)	
 			end
 			
 			if (self.myName == "saw" and event.other.name == "player") then	
@@ -321,7 +329,7 @@ function scene:show( event )
 		wormHole1:addEventListener( "postCollision", wormHole1 )
 		
 		wormHole2.postCollision = onLocalPostCollision
-		wormHole2:addEventListener( "postCollision", wormHole1 )
+		wormHole2:addEventListener( "postCollision", wormHole2 )
 		
 		saw1.postCollision = onLocalPostCollision
 		saw1:addEventListener( "postCollision", saw1 )
