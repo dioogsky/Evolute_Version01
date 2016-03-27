@@ -102,8 +102,8 @@ function scene:show( event )
 		camera:setFocus(player1) -- Set the focus to the player
 		camera:track() -- Begin auto-tracking
 
-    	local rect1 = rect_new(display.contentCenterX,500,1)
-    	transition.to( rect1, { alpha = 1,time = 250,delay = 50 })
+    local rect1 = rect_new(display.contentCenterX,500,1)
+    transition.to( rect1, { alpha = 1,time = 250,delay = 50 })
 
 		local rect2 = rect_new(display.contentCenterX,600,1)
 		transition.to( rect2, { alpha = 1,time = 250,delay = 150 })
@@ -162,7 +162,7 @@ function scene:show( event )
 		sceneGroup:insert(chaser1)
 		camera:add(sceneGroup)
 
-        function myTouchListener( event )
+    function myTouchListener( event )
 
    	 		if event.phase == "began" then
    	 		touch_x = event.x
@@ -183,7 +183,7 @@ function scene:show( event )
     		end
 		end
 
-    	function myListener( event )
+    function myListener( event )
 
     		rect1.move2()
     		rect2.move1()
@@ -191,18 +191,18 @@ function scene:show( event )
     		saw1.rotate1()
 --  		timer.performWithDelay ( 1000, rect2.move1 )
 --			timer.performWithDelay ( 2100, rect3.move2 )
-   		    saw2.move2()
-   		    saw2.rotate1()
-   		    rect4.move1()
+   		  saw2.move2()
+   		  saw2.rotate1()
+   		  rect4.move1()
     		rect5.move2()
-   		    rect6.move1()
-   		    tri1.rotate1()
-   		    tri2.rotate1()
+   		  rect6.move1()
+   		  tri1.rotate1()
+   		  tri2.rotate1()
     		player1.move1()
     		chaser1.move1()
 
     		player_x = player1.x
-        	player_y = player1.y
+        player_y = player1.y
 
    			if( player1.isSpeedUp == 1 and player1.isStop == 0 ) then
    				timer.performWithDelay ( 3000, player1.speedDown )
@@ -252,7 +252,7 @@ function scene:show( event )
 			if (self.myName == "saw" and event.other.name == "player") then
 				self.myName = nil
 				player1.stop()
-
+				pauseButton:removeSelf()
 				local failbg = display.newRect(display.contentCenterX,display.contentCenterY,375,667)
 				failbg:setFillColor(0.8,0,0,0.7)
 				local failtext = display.newImage("img/fail.png",display.contentCenterX,display.contentCenterY-100)
@@ -286,6 +286,7 @@ function scene:show( event )
 			if (self.myName == "missionPointTrigger" and event.other.name == "player" ) then
 				self.myName = nil
 				player1.stop()
+				pauseButton:removeSelf()
 
 				local successbg = display.newRect(display.contentCenterX,display.contentCenterY,375,667)
 				successbg:setFillColor(0.53,0.85,0.16,0.7)
@@ -302,6 +303,7 @@ function scene:show( event )
     				successbg = nil
     				successText:removeSelf()
     				successText = nil
+
 
     				buttonBack:removeSelf()
     				buttonBack = nil
