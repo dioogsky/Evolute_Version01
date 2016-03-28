@@ -66,6 +66,7 @@ function scene:create( event )
     -- Read 'maxLevels' from the 'myData' table. Loop over them and generating one button for each.
     for i = 1, myData.maxLevels do
         -- Create a button
+
         buttons[i] = widget.newButton({
             label = tostring( i ),
             id = tostring( i ),
@@ -77,11 +78,12 @@ function scene:create( event )
             font = "Lucida Grande",
             fontSize = 18,
             labelColor = { default = { 0.62, 0.62, 0.62 }, over = { 0.5, 0.5, 0.5 } },
-
+            alpha = 0,
             labelYOffset = 0,
             fillColor = { default={ 0.88, 0.88, 0.88, 1 }, over={ 0.5, 0.75, 1, 1 } },
 
         })
+        transition.to( buttons[i], { alpha = 1,time = 300,delay = 50*i })
         -- Position the button in the grid and add it to the scrollView
         buttons[i].x = xOffset
         buttons[i].y = yOffset

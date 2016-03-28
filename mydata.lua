@@ -12,10 +12,22 @@ M.settings.levels = {}
 -- Perhaps this happens at the end of your game level, or in a scene between game levels.
 M.settings.levels[1] = {}
 M.settings.levels[1].stars = 3
-M.settings.levels[1].score = 3833
+M.settings.levels[1].score = 0
 M.settings.levels[2] = {}
-M.settings.levels[2].stars = 2
-M.settings.levels[2].score = 4394
+M.settings.levels[2].stars = 0
+M.settings.levels[2].score = 0
+M.settings.levels[3] = {}
+M.settings.levels[3].stars = 0
+M.settings.levels[3].score = 0
+M.settings.levels[4] = {}
+M.settings.levels[4].stars = 0
+M.settings.levels[4].score = 0
+M.settings.levels[5] = {}
+M.settings.levels[5].stars = 0
+M.settings.levels[5].score = 0
+M.settings.levels[6] = {}
+M.settings.levels[6].stars = 0
+M.settings.levels[6].score = 0
 
 -- levels data members:
 --      .stars -- Stars earned per level

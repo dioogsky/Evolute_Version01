@@ -102,7 +102,7 @@ function scene:show( event )
 
 				local rect = {}
 				for i=1,8 do
-						rect[i] = rect_new(display.contentCenterX,i*170,1)
+						rect[i] = rect_new(display.contentCenterX,i*180,1)
 						transition.to( rect[i], { alpha = 1,time = 250,delay = 100*i })
 						camera:add(rect[i],1)
 						sceneGroup:insert(rect[i])
@@ -174,7 +174,10 @@ function scene:show( event )
 							self.myName = nil
 							player1.stop()
 							pauseButton:removeSelf()
-							
+							-- io.input( mydata )
+							-- t = io.read("*all")
+							-- print(t)
+							-- --io.write(t)
 							local successbg = display.newRect(display.contentCenterX,display.contentCenterY,375,667)
 							successbg:setFillColor(0.53,0.85,0.16,0.7)
 							local successText = display.newImage("img/success.png",display.contentCenterX,display.contentCenterY-100)

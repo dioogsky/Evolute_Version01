@@ -288,6 +288,7 @@ function scene:show( event )
 				player1.stop()
 				pauseButton:removeSelf()
 
+
 				local successbg = display.newRect(display.contentCenterX,display.contentCenterY,375,667)
 				successbg:setFillColor(0.53,0.85,0.16,0.7)
 				local successText = display.newImage("img/success.png",display.contentCenterX,display.contentCenterY-100)
