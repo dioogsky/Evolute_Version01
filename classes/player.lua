@@ -78,7 +78,7 @@ function player_new (positon_x,position_y,speed,r,g,b)
 	function player:speedUp()
 		--print("up")
 		player.orignspeed = player.speed
-		player.speed = 1.6 * player.speed
+		player.speed = 1.5 * player.speed
 		player:setFillColor(math.random(1),0.5,0)
 		player.isSpeedUp = 1
 		-- print("speed up!!!")
@@ -98,7 +98,7 @@ function player_new (positon_x,position_y,speed,r,g,b)
 		player.speed = player.orignspeed
 		-- print(player.speed)
 		-- print(player)
-		if (player ~= nil) then
+		if (player.isStop == 0 ) then
 			player:setFillColor(0.38,0.38,0.38)
 		end
 		player.isSpeedUp = 0

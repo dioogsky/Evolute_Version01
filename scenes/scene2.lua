@@ -125,7 +125,7 @@ function scene:show( event )
 
 				local tri2 = tri_new(200,750,5)
 
-				local wormHole1 = wormHole_new(365,500)
+				local wormHole1 = wormHole_new(10,500)
 				wormHole1.myName = "wormHole1"
 				local wormHole2 = wormHole_new(365,1200)
 				wormHole2.myName = "wormHole2"
@@ -179,18 +179,16 @@ function scene:show( event )
 		-- Sound control
 				local soundTable={
 					bgm = audio.loadSound('sounds/deep_space.mp3'),
-					saw = audio.loadSound('sounds/saw.wav')
+					saw = audio.loadSound('sounds/saw.wav'),
+					warning = audio.loadSound('sounds/warning.mp3')
 				}
-				if (audio.isChannelActive( 1 ) == false) then
-					print("hahaha")
-					audio.play(soundTable["bgm"],{
-				    channel = 1,
-				    loops = -1,
-				    fadein = 5000
-					})
-				else
-					audio.resume(1)
-				end
+
+				audio.play(soundTable["bgm"],{
+			    channel = 1,
+			    loops = -1,
+			    fadein = 5000
+				})
+
 
 
 
@@ -219,7 +217,7 @@ function scene:show( event )
 						    fadein = 10000
 							})
 						else
-							audio.stop()
+							audio.stop(2)
 						end
 
 						if( player1.y-saw1.y >= 300 )then
@@ -240,7 +238,8 @@ function scene:show( event )
 						dist_x = nil
 						dist_y = nil
 
-						audio.pause(1)
+						audio.stop(1)
+						audio.dispose( bgm )
 						audio.pause(2)
 
 						pauseButton:removeSelf()
@@ -256,9 +255,13 @@ function scene:show( event )
 				function onLocalPostCollision( self, event )
 
 					if (self.myName == "wallUp" and event.other.name == "player") then
-						local warning = display.newText("You can't go back, commander.",display.contentCenterX, 250 )
+						local warning = display.newText("You can't go back, Captain.",display.contentCenterX, 250 )
 						warning:setFillColor(0.7,0.7,0.7,1)
 						timer.performWithDelay ( 1000, transition.to( warning, { time=1000, alpha=0 } ) )
+						audio.play(soundTable["warning"],{
+					    channel = 3,
+					    loops = 0
+						})
 
 					end
 
@@ -270,18 +273,19 @@ function scene:show( event )
 					end
 
 					if (self.myName == "wormHole1") then
-						local translateObject = function()  event.other.x = 300 event.other.y = 1200 end
+						local translateObject = function()  event.other.x = 340 event.other.y = 1200 end
 						timer.performWithDelay(1,translateObject,1)
 					end
 
 					if (self.myName == "wormHole2") then
-						local translateObject = function()  event.other.x = 300 event.other.y = 500 end
+						local translateObject = function()  event.other.x = 30 event.other.y = 500 end
 						timer.performWithDelay(1,translateObject,1)
 					end
 
 					if (self.myName == "saw" and event.other.name == "player") then
 						self.myName = nil
 						player1.stop()
+						player1.isStop = 1
 						pauseButton:removeSelf()
 						local failbg = display.newRect(display.contentCenterX,display.contentCenterY,375,667)
 						failbg:setFillColor(0.8,0,0,0.7)
@@ -293,9 +297,9 @@ function scene:show( event )
 						buttonBack.alpha = 0
 						transition.to( buttonBack, { alpha = 1,time = 800,delay = 300 })
 
-						audio.fadeOut( { channel=1, time=500 } )
+						audio.stop(1)
 						audio.dispose( bgm )
-						audio.fadeOut( { channel=2, time=500 } )
+						audio.stop(2)
 						audio.dispose( saw )
 
 		    		local function myBackListener()
@@ -334,9 +338,9 @@ function scene:show( event )
 						buttonBack.alpha = 0
 						transition.to( buttonBack, { alpha = 1,time = 800,delay = 300 })
 
-						audio.fadeOut( { channel=1, time=500 } )
+						audio.stop(1)
 						audio.dispose( bgm )
-						audio.fadeOut( { channel=2, time=500 } )
+						audio.stop(2)
 						audio.dispose( saw )
 
 		    			local function myBackListener()

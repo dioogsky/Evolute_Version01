@@ -72,6 +72,18 @@ function scene:show( event )
     -- Called when the scene is still off screen (but is about to come on screen)
     elseif ( phase == "did" ) then
 
+				local soundTable={
+					bgm = audio.loadSound('sounds/deep_space.mp3'),
+					saw = audio.loadSound('sounds/saw.wav'),
+					warning = audio.loadSound('sounds/warning.mp3')
+				}
+
+				audio.play(soundTable["bgm"],{
+			    channel = 1,
+			    loops = -1,
+			    fadein = 5000
+				})
+
 				local wallUp = display.newRect(display.contentCenterX,0,346,20)
 	    	physics.addBody( wallUp,'static', { density=20, friction=0.5, bounce=0.3 } )
 				wallUp: setFillColor(0,0,0,0)
@@ -159,6 +171,10 @@ function scene:show( event )
 			local function myPauseListener()
 					dist_x = nil
 					dist_y = nil
+
+					audio.stop(1)
+					audio.dispose( bgm )
+
 					pauseButton:removeSelf()
 					showMenu()
 					Runtime:removeEventListener( "touch", myTouchListener )
@@ -174,16 +190,7 @@ function scene:show( event )
 							self.myName = nil
 							player1.stop()
 							pauseButton:removeSelf()
-							-- local fullPath = system.pathForFile( "mydata.lua", system.ResourceDirectory )
-							-- local fileHandle = io.open( fullPath, "a" )
-							-- print( fileHandle:read("*a") )
-							-- print( "Successfully read the file!" )
-							-- local b = string.gsub( fileHandle, "M.settings.unlockedLevels = 2","M.settings.unlockedLevels = 3"  )
-							-- io.close( fileHandle )
-							-- io.input( mydata )
-							-- t = io.read("*all")
-							-- print(t)
-							-- --io.write(t)
+
 							local successbg = display.newRect(display.contentCenterX,display.contentCenterY,375,667)
 							successbg:setFillColor(0.53,0.85,0.16,0.7)
 							local successText = display.newImage("img/success.png",display.contentCenterX,display.contentCenterY-100)
@@ -223,9 +230,13 @@ function scene:show( event )
 				end
 
 				if (self.myName == "wallUp") then
-					local warning = display.newText("You can't go back, commander.",display.contentCenterX, 250 )
+					local warning = display.newText("You can't go back, Captain.",display.contentCenterX, 250 )
 					warning:setFillColor(0.7,0.7,0.7,1)
 					timer.performWithDelay ( 1000, transition.to( warning, { time=1000, alpha=0 } ) )
+					audio.play(soundTable["warning"],{
+						channel = 3,
+						loops = 0
+					})
 				end
 
 				return true
