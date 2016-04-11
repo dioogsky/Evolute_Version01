@@ -99,31 +99,43 @@ function scene:show( event )
 				camera:setFocus(player1) -- Set the focus to the player
 				camera:track() -- Begin auto-tracking
 
+				local rect = {}
+				local saw = {}
+				local tri = {}
 
-		    local rect1 = rect_new(display.contentCenterX,500,1)
-		    transition.to( rect1, { alpha = 1,time = 250,delay = 50 })
+		    rect[1] = rect_new(display.contentCenterX,500,1)
+		    transition.to( rect[1], { alpha = 1,time = 250,delay = 50 })
 
-				local rect2 = rect_new(display.contentCenterX,600,1)
-				transition.to( rect2, { alpha = 1,time = 250,delay = 150 })
+				rect[2] = rect_new(display.contentCenterX,600,1)
+				transition.to( rect[2], { alpha = 1,time = 250,delay = 150 })
 
-				local saw1 = saw_new(display.contentCenterX,700,20)
-				transition.to( saw1, { alpha = 1,time = 250,delay = 250 })
+				saw[1] = saw_new(display.contentCenterX,700,20)
+				transition.to( saw[1], { alpha = 1,time = 250,delay = 250 })
 
-				local saw2 = saw_new(display.contentCenterX,800,20)
-				transition.to( saw1, { alpha = 1,time = 250,delay = 350 })
+				saw[2] = saw_new(display.contentCenterX,800,20)
+				transition.to( saw[2], { alpha = 1,time = 250,delay = 350 })
 
-				local rect4 = rect_new(display.contentCenterX,900,1)
-		    	transition.to( rect4, { alpha = 1,time = 250,delay = 450 })
+				rect[3] = rect_new(display.contentCenterX,900,1)
+		    transition.to( rect[3], { alpha = 1,time = 250,delay = 450 })
 
-				local rect5 = rect_new(display.contentCenterX,1000,1)
-				transition.to( rect5, { alpha = 1,time = 250,delay = 550 })
+				rect[4] = rect_new(display.contentCenterX,1000,1)
+				transition.to( rect[4], { alpha = 1,time = 250,delay = 550 })
 
-				local rect6 = rect_new(display.contentCenterX,1100,1)
-				transition.to( rect6, { alpha = 1,time = 250,delay = 650 })
+				rect[5] = rect_new(display.contentCenterX,1100,1)
+				transition.to( rect[5], { alpha = 1,time = 250,delay = 650 })
 
-				local tri1 = tri_new(100,200,3)
+				rect[6] = rect_new(display.contentCenterX,1200,1)
+				transition.to( rect[6], { alpha = 1,time = 250,delay = 750 })
 
-				local tri2 = tri_new(200,750,5)
+				saw[3] = saw_new(display.contentCenterX,1150,20)
+				transition.to( saw[3], { alpha = 1,time = 250,delay = 700 })
+
+				saw[4] = saw_new(display.contentCenterX,1250,20)
+				transition.to( saw[4], { alpha = 1,time = 250,delay = 800 })
+
+				tri[1] = tri_new(100,200,3)
+
+				tri[2] = tri_new(200,750,5)
 
 				local wormHole1 = wormHole_new(10,500)
 				wormHole1.myName = "wormHole1"
@@ -132,33 +144,30 @@ function scene:show( event )
 
 				local chaser1 = chaser_new(display.contentCenterX,display.contentCenterY-100,2.4)
 
+				for i = 1,#rect do
+					camera:add(rect[i],1)
+					sceneGroup:insert(rect[i])
+				end
+
+				for i = 1,#saw do
+					camera:add(saw[i],1)
+					sceneGroup:insert(saw[i])
+				end
+
+				for i = 1,#tri do
+					camera:add(tri[i],1)
+					sceneGroup:insert(tri[i])
+				end
+
 				camera:add(chaser1,1)
-				camera:add(rect1,1)
-				camera:add(rect2,1)
-				camera:add(saw1,1)
-				camera:add(saw2,1)
-				camera:add(rect4,1)
-				camera:add(rect5,1)
-				camera:add(rect6,1)
-				camera:add(tri1,1)
-				camera:add(tri2,1)
 				camera:add(wormHole1,1)
 				camera:add(wormHole2,1)
-
-				sceneGroup:insert(rect1)
-				sceneGroup:insert(rect2)
-				sceneGroup:insert(saw1)
-				sceneGroup:insert(saw2)
-				sceneGroup:insert(rect4)
-				sceneGroup:insert(rect5)
-				sceneGroup:insert(rect6)
-				sceneGroup:insert(tri1)
-				sceneGroup:insert(tri2)
 				sceneGroup:insert(wormHole1)
 				sceneGroup:insert(wormHole2)
 				sceneGroup:insert(player1)
 				sceneGroup:insert(chaser1)
 				camera:add(sceneGroup)
+
 		-- Core control function
 		    function myTouchListener( event )
 
@@ -190,27 +199,29 @@ function scene:show( event )
 				})
 
 
-
-
-
 		-- Frame event
 		    function myListener( event )
 
-		    		rect1.move2()
-		    		rect2.move1()
-		    		saw1.move1()
-		    		saw1.rotate1()
-		   		  saw2.move2()
-		   		  saw2.rotate1()
-		   		  rect4.move1()
-		    		rect5.move2()
-		   		  rect6.move1()
-		   		  tri1.rotate1()
-		   		  tri2.rotate1()
+						for i = 1,#rect,2 do
+							rect[i].move1()
+							rect[i+1].move2()
+						end
+
+						for i = 1,#saw,2 do
+							saw[i].move1()
+							saw[i].rotate1()
+							saw[i+1].move2()
+							saw[i+1].rotate1()
+						end
+
+						for i = 1,#tri do
+							tri[i].rotate1()
+						end
+
 		    		player1.move1()
 		    		chaser1.move1()
 
-						if( saw1.y-player1.y <= 300 )then
+						if( saw[1].y-player1.y <= 300 )then
 							audio.play(soundTable["saw"],{
 						    channel = 2,
 						    loops = -1 ,
@@ -220,7 +231,7 @@ function scene:show( event )
 							audio.stop(2)
 						end
 
-						if( player1.y-saw1.y >= 300 )then
+						if( player1.y-saw[1].y >= 300 )then
 							audio.fadeOut( { channel=2, time=1000 } )
 						end
 
@@ -365,10 +376,10 @@ function scene:show( event )
 					return true
 				end
 
-				tri1.postCollision = onLocalPostCollision
-				tri1:addEventListener( "postCollision", tri1 )
-				tri2.postCollision = onLocalPostCollision
-				tri2:addEventListener( "postCollision", tri2 )
+				for i = 1,#tri do
+				tri[i].postCollision = onLocalPostCollision
+				tri[i]:addEventListener( "postCollision", tri[i] )
+				end
 
 				wallUp.postCollision = onLocalPostCollision
 				wallUp:addEventListener( "postCollision", wallUp )
@@ -379,11 +390,11 @@ function scene:show( event )
 				wormHole2.postCollision = onLocalPostCollision
 				wormHole2:addEventListener( "postCollision", wormHole2 )
 
-				saw1.postCollision = onLocalPostCollision
-				saw1:addEventListener( "postCollision", saw1 )
+				for i = 1,#saw do
+				saw[i].postCollision = onLocalPostCollision
+				saw[i]:addEventListener( "postCollision", saw[i] )
+				end
 
-				saw2.postCollision = onLocalPostCollision
-				saw2:addEventListener( "postCollision", saw2 )
 
 				missionPointTrigger.postCollision = onLocalPostCollision
 				missionPointTrigger:addEventListener( "postCollision", missionPointTrigger )

@@ -120,6 +120,7 @@ function scene:show( event )
 						sceneGroup:insert(rect[i])
 				end
 
+
 			sceneGroup:insert(player1)
 			camera:add(sceneGroup)
 
