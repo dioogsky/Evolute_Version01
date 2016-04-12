@@ -31,7 +31,7 @@ if (...) then
 			local nClearance = neighbour._clearance[finder._walkable]
 			local pushThisNode = clearance and nClearance and (nClearance >= clearance)
 			if (clearance and pushThisNode) or (not clearance) then
-				if neighbour._opened then neighbour._opened = false end				
+				if neighbour._opened then neighbour._opened = false end
 				neighbour._h = heuristic(endNode, neighbour)
 				neighbour._f = neighbour._g + neighbour._h
 				openList:push(neighbour)
@@ -43,7 +43,7 @@ if (...) then
   -- Calculates a path.
   -- Returns the path from location `<startX, startY>` to location `<endX, endY>`.
   return function (finder, startNode, endNode, clearance, toClear, overrideHeuristic, overrideCostEval)
-		
+
 		local heuristic = overrideHeuristic or finder._heuristic
 		local openList = Heap()
 		startNode._g = 0
@@ -64,14 +64,14 @@ if (...) then
 					toClear[neighbour] = true
 					if not neighbour._opened then
 						neighbour._g = huge
-						neighbour._parent = nil	
+						neighbour._parent = nil
 					end
 					updateVertex(finder, openList, node, neighbour, endNode, clearance, heuristic, overrideCostEval)
-				end	
-			end	
+				end
+			end
 		end
-		
-		return nil 
+
+		return nil
 	end
 
 end

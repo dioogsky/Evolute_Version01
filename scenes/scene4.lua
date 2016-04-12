@@ -29,10 +29,6 @@ local Pathfinder = require ("jumper.pathfinder")
 
 local map = map.new()
 
-
-
-
-
 camera = perspective.createView()
 camera:setBounds(170, 205, 0, 2200)
 physics.start()
@@ -62,21 +58,13 @@ function scene:create( event )
     composer.removeScene('scenes.menu')
 		local bg = display.newRect(display.contentCenterX,display.contentCenterY,450,8000)
 		bg: setFillColor(0.93,0.93,0.93)
-	  --local wallLeft = wall_new(5,600)
 		local wallL = display.newRect(5,600,13,2050)
 		physics.addBody( wallL,'static', { density=2, friction=0.5, bounce=0.3 } )
 		local wallR = display.newRect(373,600,13,2050)
 		physics.addBody( wallR,'static', { density=2, friction=0.5, bounce=0.3 } )
-	  --local wallRight = wall_new(373, 600)
 		camera:add(wallL,1)
 		camera:add(wallR,1)
-		-- sceneGroup:insert(wallL)
-		-- sceneGroup:insert(wallR)
-		--camera:add(wallLeft,1)
-		--camera:add(wallRight,1)
 		sceneGroup:insert(bg)
-		--sceneGroup:insert(wallLeft)
-		--sceneGroup:insert(wallRight)
 
     -- Initialise the scene here
     -- Example: add display objects to "sceneGroup", add touch listeners, etc.
@@ -124,16 +112,16 @@ function scene:show( event )
 				camera:setFocus(player1) -- Set the focus to the player
 				camera:track() -- Begin auto-tracking
 
-				local chaser1 = chaser_new(23.4,25.6,2.4)
+				local chaser1 = chaser_new(display.contentCenterX,25.6,2.4)
 				camera:add(chaser1, 1)
 				sceneGroup:insert(chaser1)
 
-				local tri = {}
-				for i=1,8 do
-						tri[i] = tri_new(math.random(2,9)*35,180*i,math.random(2,5))
-						camera:add(tri[i],1)
-						sceneGroup:insert(tri[i])
-				end
+				-- local tri = {}
+				-- for i=1,8 do
+				-- 		tri[i] = tri_new(math.random(2,9)*35,180*i,math.random(2,5))
+				-- 		camera:add(tri[i],1)
+				-- 		sceneGroup:insert(tri[i])
+				-- end
 
 				local rect = {}
 				for i=1,12 do
@@ -145,6 +133,8 @@ function scene:show( event )
 
 			sceneGroup:insert(player1)
 			camera:add(sceneGroup)
+
+			local pauseButton = display.newImage("img/pause.png",354,21)
 
 	    function myTouchListener( event )
 
@@ -166,13 +156,11 @@ function scene:show( event )
 		    	end
 			end
 
-
-
 	    function myListener( event )
 
-	   			for i=1,8 do
-					tri[i].rotate1()
-					end
+					-- 		for i=1,8 do
+					-- tri[i].rotate1()
+					-- end
 
 					for i=1,12  do
 							if (i%2 == 0)then
@@ -193,7 +181,7 @@ function scene:show( event )
 							map[i][j]=0
 						end
 					end
-					for i = 1,5 do
+					for i = 1,12 do
 						map[math.ceil(rect[i].y/_y)][math.ceil(rect[i].x/_x)]=1
 						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+1)]=1
 						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-1)]=1
@@ -203,6 +191,19 @@ function scene:show( event )
 						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-3)]=1
 						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+4)]=1
 						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-4)]=1
+						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+5)]=1
+						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-5)]=1
+						map[math.ceil(rect[i].y/_y)-1][math.ceil(rect[i].x/_x)]=1
+						map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+1)]=1
+						map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)-1)]=1
+						map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+2)]=1
+						map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)-2)]=1
+						map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+3)]=1
+						map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)-3)]=1
+						map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+4)]=1
+						map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)-4)]=1
+						map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+5)]=1
+						map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)-5)]=1
 					end
 
 					-- Creates a grid object
@@ -224,7 +225,11 @@ function scene:show( event )
 									movePath[count] = { x=node:getX(), y=node:getY() }
 								end
 								print(movePath[2].x,movePath[2].y )
-								transition.to(chaser1,{x=movePath[2].x*_x, y=movePath[2].y*_y,time =50})
+								local a = math.sqrt((movePath[3].x*_x - chaser1.x)^2+(movePath[3].y*_y - chaser1.y)^2)
+								print (a)
+								chaser1.x = chaser1.x + 2.6*(movePath[3].x*_x - chaser1.x)/a
+								chaser1.y = chaser1.y + 2.6*(movePath[3].y*_y - chaser1.y)/a
+								--transition.to(chaser1,{x=movePath[3].x*_x, y=movePath[3].y*_y,time =115})
 							end )
 					end
 
@@ -232,12 +237,46 @@ function scene:show( event )
 		   				timer.performWithDelay ( 1500, player1.speedDown,1 )
 		   		end
 
+					if ((math.sqrt((player1.x-chaser1.x)^2 +(player1.y-chaser1.y)^2)) <= 25) then
+						player1.stop()
+						player1.isStop = 1
+						pauseButton:removeSelf()
+						local failbg = display.newRect(display.contentCenterX,display.contentCenterY,375,667)
+						failbg:setFillColor(0.8,0,0,0.7)
+						local failtext = display.newImage("img/fail.png",display.contentCenterX,display.contentCenterY-100)
+						failtext.alpha = 0
+						transition.to( failtext, { alpha = 1,time = 800,delay = 200 })
+
+						local buttonBack = display.newImage("img/backButton.png",80,500)
+						buttonBack.alpha = 0
+						transition.to( buttonBack, { alpha = 1,time = 800,delay = 300 })
+
+						audio.stop(1)
+						audio.dispose( bgm )
+						audio.stop(2)
+						audio.dispose( saw )
+
+		    		local function myBackListener()
+		    				failbg:removeSelf()
+		    				failbg = nil
+		    				failtext:removeSelf()
+		    				failtext = nil
+		    				buttonBack:removeSelf()
+		    				buttonBack = nil
+		    				dist_x = nil
+		   	 				dist_y = nil
+
+		    				showMenu()
+								Runtime:removeEventListener( "touch", myTouchListener )
+								Runtime:removeEventListener( "enterFrame", myListener )
+								physics.stop()
+								camera:destroy()
+			    			end
+							buttonBack:addEventListener("tap",myBackListener)
+					end
+
 			end
 
-
-			local s = display.newCircle(23.4,25.6,5)
-
-			local pauseButton = display.newImage("img/pause.png",354,21)
 			local function myPauseListener()
 					dist_x = nil
 					dist_y = nil
@@ -312,10 +351,10 @@ function scene:show( event )
 			end
 
 
-			for i=1,8 do
-				tri[i].postCollision = onLocalPostCollision
-				tri[i]:addEventListener( "postCollision", tri[i] )
-			end
+			-- for i=1,8 do
+			-- 	tri[i].postCollision = onLocalPostCollision
+			-- 	tri[i]:addEventListener( "postCollision", tri[i] )
+			-- end
 
 			wallUp.postCollision = onLocalPostCollision
 			wallUp:addEventListener( "postCollision", wallUp )
