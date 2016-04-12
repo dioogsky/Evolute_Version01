@@ -13,38 +13,13 @@ local wormHole = require('classes.wormHole')
 local player = require('classes.player')
 local chaser = require('classes.chaser')
 local saw = require('classes.saw')
+local map = require('classes.map')
 local scene = composer.newScene()
 local physics = require("physics")
 local perspective = require("perspective")
 
 --local particleDesigner = require( "particleDesigner" )
-local map = {
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, --1
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-}
+
 -- Value for walkable tiles
 local walkable = 0
 
@@ -52,7 +27,7 @@ local Grid = require ("jumper.grid")
 -- Calls the pathfinder class
 local Pathfinder = require ("jumper.pathfinder")
 
-
+local map = map.new()
 
 
 
@@ -208,22 +183,26 @@ function scene:show( event )
 					end
 
 					player1.move1()
-					chaser1.move1()
+
 		    	player_x = player1.x
 		      player_y = player1.y
-
-					for i = 1,25 do
-						for j = 1,15 do
+					_x = 375/30
+					_y = 667/100
+					for i = 1,256 do
+						for j = 1,30 do
 							map[i][j]=0
 						end
 					end
-					for i = 1,4 do
-						map[math.floor(rect[i].y/25.6)][math.floor(rect[i].x/23.4)]=1
-						map[math.floor(rect[i].y/25.6)][math.floor((rect[i].x/23.4)+1)]=1
-						map[math.floor(rect[i].y/25.6)][math.floor((rect[i].x/23.4)-1)]=1
-						map[math.floor(rect[i].y/25.6)][math.floor((rect[i].x/23.4)+2)]=1
-						map[math.floor(rect[i].y/25.6)][math.floor((rect[i].x/23.4)-2)]=1
-						map[math.floor(rect[i].y/25.6)][math.floor((rect[i].x/23.4)+3)]=1
+					for i = 1,5 do
+						map[math.ceil(rect[i].y/_y)][math.ceil(rect[i].x/_x)]=1
+						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+1)]=1
+						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-1)]=1
+						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+2)]=1
+						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-2)]=1
+						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+3)]=1
+						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-3)]=1
+						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+4)]=1
+						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-4)]=1
 					end
 
 					-- Creates a grid object
@@ -233,8 +212,8 @@ function scene:show( event )
 					local myFinder = Pathfinder(grid, 'ASTAR', walkable)
 					myFinder:clearAnnotations()
 					--print(chaser1.x)
-					local startx, starty = math.ceil(chaser1.x/23.4),math.ceil(chaser1.y/25.6)
-					local endx, endy = math.floor(player1.x/23.4),math.floor(player1.y/25.6)
+					local startx, starty = math.ceil(chaser1.x/_x),math.ceil(chaser1.y/_y)
+					local endx, endy = math.ceil(player1.x/_x),math.ceil(player1.y/_y)
 					local path = myFinder:getPath(startx, starty, endx, endy)
 
 					if path then
@@ -245,7 +224,7 @@ function scene:show( event )
 									movePath[count] = { x=node:getX(), y=node:getY() }
 								end
 								print(movePath[2].x,movePath[2].y )
-								transition.to(chaser1,{x=movePath[2].x*23.4, y=movePath[2].y*25.6,time =800})
+								transition.to(chaser1,{x=movePath[2].x*_x, y=movePath[2].y*_y,time =50})
 							end )
 					end
 
@@ -257,8 +236,6 @@ function scene:show( event )
 
 
 			local s = display.newCircle(23.4,25.6,5)
-			--local e = display.newCircle(6*23.3,14*25.6,5)
-
 
 			local pauseButton = display.newImage("img/pause.png",354,21)
 			local function myPauseListener()
