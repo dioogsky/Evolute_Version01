@@ -127,15 +127,27 @@ function scene:show( event )
 				rect[6] = rect_new(display.contentCenterX,1200,1)
 				transition.to( rect[6], { alpha = 1,time = 250,delay = 750 })
 
-				saw[3] = saw_new(display.contentCenterX,1150,20)
+				rect[7] = rect_new(display.contentCenterX,1300,1)
+				transition.to( rect[7], { alpha = 1,time = 250,delay = 850 })
+
+				rect[8] = rect_new(display.contentCenterX,1400,1)
+				transition.to( rect[8], { alpha = 1,time = 250,delay = 850 })
+
+				rect[9] = rect_new(display.contentCenterX,1500,1)
+				transition.to( rect[9], { alpha = 1,time = 250,delay = 850 })
+
+				rect[10] = rect_new(display.contentCenterX,1600,1)
+				transition.to( rect[10], { alpha = 1,time = 250,delay = 850 })
+
+				saw[3] = saw_new(display.contentCenterX,1250,20)
 				transition.to( saw[3], { alpha = 1,time = 250,delay = 700 })
 
-				saw[4] = saw_new(display.contentCenterX,1250,20)
+				saw[4] = saw_new(display.contentCenterX,1350,20)
 				transition.to( saw[4], { alpha = 1,time = 250,delay = 800 })
 
 				tri[1] = tri_new(100,200,3)
-
-				tri[2] = tri_new(200,750,5)
+				tri[2] = tri_new(200,750,10)
+				tri[3] = tri_new(300,380,5)
 
 				local wormHole1 = wormHole_new(10,500)
 				wormHole1.myName = "wormHole1"
@@ -206,6 +218,7 @@ function scene:show( event )
 							rect[i].move1()
 							rect[i+1].move2()
 						end
+
 
 						for i = 1,#saw,2 do
 							saw[i].move1()

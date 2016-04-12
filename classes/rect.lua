@@ -43,6 +43,10 @@ function rect_new (positon_x,position_y,speed)
 		return true
     end
 
+    function rect:rotate1()
+      	rect:rotate(speed*10)
+  	end
+
     function rect:setColor()
         self:setFillColor(1, 0, 0)
     end

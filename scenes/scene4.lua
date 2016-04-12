@@ -18,6 +18,44 @@ local physics = require("physics")
 local perspective = require("perspective")
 
 --local particleDesigner = require( "particleDesigner" )
+local map = {
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, --1
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+}
+-- Value for walkable tiles
+local walkable = 0
+
+local Grid = require ("jumper.grid")
+-- Calls the pathfinder class
+local Pathfinder = require ("jumper.pathfinder")
+
+
+
+
+
 
 
 camera = perspective.createView()
@@ -49,14 +87,21 @@ function scene:create( event )
     composer.removeScene('scenes.menu')
 		local bg = display.newRect(display.contentCenterX,display.contentCenterY,450,8000)
 		bg: setFillColor(0.93,0.93,0.93)
-	  local wallLeft = wall_new(5,600)
-	  local wallRight = wall_new(373, 600)
-
-		camera:add(wallLeft,1)
-		camera:add(wallRight,1)
+	  --local wallLeft = wall_new(5,600)
+		local wallL = display.newRect(5,600,13,2050)
+		physics.addBody( wallL,'static', { density=2, friction=0.5, bounce=0.3 } )
+		local wallR = display.newRect(373,600,13,2050)
+		physics.addBody( wallR,'static', { density=2, friction=0.5, bounce=0.3 } )
+	  --local wallRight = wall_new(373, 600)
+		camera:add(wallL,1)
+		camera:add(wallR,1)
+		-- sceneGroup:insert(wallL)
+		-- sceneGroup:insert(wallR)
+		--camera:add(wallLeft,1)
+		--camera:add(wallRight,1)
 		sceneGroup:insert(bg)
-		sceneGroup:insert(wallLeft)
-		sceneGroup:insert(wallRight)
+		--sceneGroup:insert(wallLeft)
+		--sceneGroup:insert(wallRight)
 
     -- Initialise the scene here
     -- Example: add display objects to "sceneGroup", add touch listeners, etc.
@@ -104,6 +149,10 @@ function scene:show( event )
 				camera:setFocus(player1) -- Set the focus to the player
 				camera:track() -- Begin auto-tracking
 
+				local chaser1 = chaser_new(23.4,25.6,2.4)
+				camera:add(chaser1, 1)
+				sceneGroup:insert(chaser1)
+
 				local tri = {}
 				for i=1,8 do
 						tri[i] = tri_new(math.random(2,9)*35,180*i,math.random(2,5))
@@ -142,6 +191,8 @@ function scene:show( event )
 		    	end
 			end
 
+
+
 	    function myListener( event )
 
 	   			for i=1,8 do
@@ -157,14 +208,57 @@ function scene:show( event )
 					end
 
 					player1.move1()
-
+					chaser1.move1()
 		    	player_x = player1.x
 		      player_y = player1.y
+
+					for i = 1,25 do
+						for j = 1,15 do
+							map[i][j]=0
+						end
+					end
+					for i = 1,4 do
+						map[math.floor(rect[i].y/25.6)][math.floor(rect[i].x/23.4)]=1
+						map[math.floor(rect[i].y/25.6)][math.floor((rect[i].x/23.4)+1)]=1
+						map[math.floor(rect[i].y/25.6)][math.floor((rect[i].x/23.4)-1)]=1
+						map[math.floor(rect[i].y/25.6)][math.floor((rect[i].x/23.4)+2)]=1
+						map[math.floor(rect[i].y/25.6)][math.floor((rect[i].x/23.4)-2)]=1
+						map[math.floor(rect[i].y/25.6)][math.floor((rect[i].x/23.4)+3)]=1
+					end
+
+					-- Creates a grid object
+					local grid = Grid(map)
+					local movePath = {}
+					-- Creates a pathfinder object using Jump Point Search algorithm
+					local myFinder = Pathfinder(grid, 'ASTAR', walkable)
+					myFinder:clearAnnotations()
+					--print(chaser1.x)
+					local startx, starty = math.ceil(chaser1.x/23.4),math.ceil(chaser1.y/25.6)
+					local endx, endy = math.floor(player1.x/23.4),math.floor(player1.y/25.6)
+					local path = myFinder:getPath(startx, starty, endx, endy)
+
+					if path then
+						--print(('Path found! Length: %.2f'):format(path:getLength()))
+						timer.performWithDelay ( 1,function ()
+								for node, count in path:nodes() do
+									--print(('Step%d -- x: %d , y: %d'):format(count, node:getX(), node:getY()))
+									movePath[count] = { x=node:getX(), y=node:getY() }
+								end
+								print(movePath[2].x,movePath[2].y )
+								transition.to(chaser1,{x=movePath[2].x*23.4, y=movePath[2].y*25.6,time =800})
+							end )
+					end
 
 		   		if( player1.isSpeedUp == 1 and player1.isStop == 0 ) then
 		   				timer.performWithDelay ( 1500, player1.speedDown,1 )
 		   		end
+
 			end
+
+
+			local s = display.newCircle(23.4,25.6,5)
+			--local e = display.newCircle(6*23.3,14*25.6,5)
+
 
 			local pauseButton = display.newImage("img/pause.png",354,21)
 			local function myPauseListener()

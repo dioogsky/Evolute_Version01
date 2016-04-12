@@ -23,7 +23,7 @@ function chaser_new (positon_x,position_y,speed)
 	function  chaser:move1()
 		local n = 1.0
 		if(dist_y == nil and dist_x == nil) then
-        	chaser.y = chaser.y
+      chaser.y = chaser.y
     	elseif(touch_x >= display.contentCenterX and touch_y >= display.contentCenterY) then
         	chaser.y=chaser.y+n*dist_y
         	chaser.x=chaser.x+n*dist_x
@@ -36,9 +36,8 @@ function chaser_new (positon_x,position_y,speed)
     	elseif(touch_x >= display.contentCenterX and touch_y <= display.contentCenterY ) then
         	chaser.y=chaser.y-n*dist_y
         	chaser.x=chaser.x-n*dist_x
+      end
 
-
-        end
 	end
 
 	return chaser
