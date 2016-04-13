@@ -12,12 +12,22 @@ local wall = require('classes.wall')
 local wormHole = require('classes.wormHole')
 local player = require('classes.player')
 local chaser = require('classes.chaser')
+local map = require('classes.map')
 local saw = require('classes.saw')
 local scene = composer.newScene()
 local physics = require("physics")
 local perspective = require("perspective")
 
 --local particleDesigner = require( "particleDesigner" )
+
+-- Value for walkable tiles
+local walkable = 0
+
+local Grid = require ("jumper.grid")
+-- Calls the pathfinder class
+local Pathfinder = require ("jumper.pathfinder")
+
+local map = map.new()
 
 
 camera = perspective.createView()
@@ -154,7 +164,7 @@ function scene:show( event )
 				local wormHole2 = wormHole_new(365,1200)
 				wormHole2.myName = "wormHole2"
 
-				local chaser1 = chaser_new(display.contentCenterX,display.contentCenterY-100,2.4)
+				local chaser1 = chaser_new(display.contentCenterX,display.contentCenterY-200,2.4)
 
 				for i = 1,#rect do
 					camera:add(rect[i],1)
@@ -210,6 +220,7 @@ function scene:show( event )
 			    fadein = 5000
 				})
 
+				local pauseButton = display.newImage("img/pause.png",354,21)
 
 		-- Frame event
 		    function myListener( event )
@@ -232,7 +243,7 @@ function scene:show( event )
 						end
 
 		    		player1.move1()
-		    		chaser1.move1()
+
 
 						if( saw[1].y-player1.y <= 300 )then
 							audio.play(soundTable["saw"],{
@@ -255,9 +266,109 @@ function scene:show( event )
 		   				timer.performWithDelay ( 3000, player1.speedDown )
 		   			end
 
+						_x = 375/30
+						_y = 667/100
+						for i = 1,256 do
+							for j = 1,30 do
+								map[i][j]=0
+							end
+						end
+						for i = 1,10 do
+							map[math.ceil(rect[i].y/_y)][math.ceil(rect[i].x/_x)]=1
+							map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+1)]=1
+							map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-1)]=1
+							map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+2)]=1
+							map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-2)]=1
+							map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+3)]=1
+							map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-3)]=1
+							map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+4)]=1
+							map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-4)]=1
+							map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+5)]=1
+							map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-5)]=1
+							map[math.ceil(rect[i].y/_y)-1][math.ceil(rect[i].x/_x)]=1
+							map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+1)]=1
+							map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)-1)]=1
+							map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+2)]=1
+							map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)-2)]=1
+							map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+3)]=1
+							map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)-3)]=1
+							map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+4)]=1
+							map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)-4)]=1
+							map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+5)]=1
+							map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)-5)]=1
+						end
+
+						-- Creates a grid object
+						local grid = Grid(map)
+						local movePath = {}
+						-- Creates a pathfinder object using Jump Point Search algorithm
+						local myFinder = Pathfinder(grid, 'ASTAR', walkable)
+						myFinder:clearAnnotations()
+						--print(chaser1.x)
+						local startx, starty = math.ceil(chaser1.x/_x),math.ceil(chaser1.y/_y)
+						local endx, endy = math.ceil(player1.x/_x),math.ceil(player1.y/_y)
+						local path = myFinder:getPath(startx, starty, endx, endy)
+
+						if path then
+							--print(('Path found! Length: %.2f'):format(path:getLength()))
+							timer.performWithDelay ( 1,function ()
+									for node, count in path:nodes() do
+										--print(('Step%d -- x: %d , y: %d'):format(count, node:getX(), node:getY()))
+										movePath[count] = { x=node:getX(), y=node:getY() }
+									end
+									print(movePath[2].x,movePath[2].y )
+									local a = math.sqrt((movePath[3].x*_x - chaser1.x)^2+(movePath[3].y*_y - chaser1.y)^2)
+									print (a)
+									chaser1.x = chaser1.x + 2.6*(movePath[3].x*_x - chaser1.x)/a
+									chaser1.y = chaser1.y + 2.6*(movePath[3].y*_y - chaser1.y)/a
+									--transition.to(chaser1,{x=movePath[3].x*_x, y=movePath[3].y*_y,time =115})
+								end )
+						end
+
+
+						if ((math.sqrt((player1.x-chaser1.x)^2 +(player1.y-chaser1.y)^2)) <= 25) then
+							player1.stop()
+							player1.isStop = 1
+							pauseButton:removeSelf()
+							local failbg = display.newRect(display.contentCenterX,display.contentCenterY,375,667)
+							failbg:setFillColor(0.8,0,0,0.7)
+							local failtext = display.newImage("img/fail.png",display.contentCenterX,display.contentCenterY-100)
+							failtext.alpha = 0
+							transition.to( failtext, { alpha = 1,time = 800,delay = 200 })
+
+							local buttonBack = display.newImage("img/backButton.png",80,500)
+							buttonBack.alpha = 0
+							transition.to( buttonBack, { alpha = 1,time = 800,delay = 300 })
+
+							audio.stop(1)
+							audio.dispose( bgm )
+							audio.stop(2)
+							audio.dispose( saw )
+
+			    		local function myBackListener()
+			    				failbg:removeSelf()
+			    				failbg = nil
+			    				failtext:removeSelf()
+			    				failtext = nil
+			    				buttonBack:removeSelf()
+			    				buttonBack = nil
+			    				dist_x = nil
+			   	 				dist_y = nil
+
+			    				showMenu()
+									Runtime:removeEventListener( "touch", myTouchListener )
+									Runtime:removeEventListener( "enterFrame", myListener )
+									physics.stop()
+									camera:destroy()
+				    			end
+								buttonBack:addEventListener("tap",myBackListener)
+						end
+
+
+
 				end
 
-				local pauseButton = display.newImage("img/pause.png",354,21)
+
 				local function myPauseListener()
 						dist_x = nil
 						dist_y = nil

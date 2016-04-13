@@ -17,6 +17,7 @@ function player_new (positon_x,position_y,speed,r,g,b)
 	player.orignspeed = speed
 	player.isSpeedUp = 0
 	player.isStop = 0
+  player.hasKey = 0
 	physics.addBody( player, { density=2, friction=0.5, bounce=0.3 } )
 
 --  local trackPoint = {}

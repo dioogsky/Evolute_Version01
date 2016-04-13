@@ -78,7 +78,8 @@ function scene:show( event )
 					bgm = audio.loadSound('sounds/deep_space.mp3'),
 					saw = audio.loadSound('sounds/saw.wav'),
 					warning = audio.loadSound('sounds/warning.mp3'),
-          openDoor = audio.loadSound('sounds/openDoor.mp3')
+          openDoor = audio.loadSound('sounds/openDoor.mp3'),
+					key = audio.loadSound('sounds/key.wav')
 				}
 
 				audio.play(soundTable["bgm"],{
@@ -103,6 +104,11 @@ function scene:show( event )
         camera:add(lockTriggerOff,1)
         sceneGroup:insert(lockTriggerOff)
 
+				local key = display.newImage('img/key.png',40,300)
+				key.myName = 'key'
+				physics.addBody( key,'static' ,{ density=2, friction=0.5, bounce=0.3 } )
+				camera:add(key,1)
+        sceneGroup:insert(key)
 
         local gate1 = gateL_new(450,1)
         camera:add(gate1,1)
@@ -172,7 +178,7 @@ function scene:show( event )
 	   			for i=1,8 do
 					tri[i].rotate1()
 					end
-          if(math.sqrt((player1.x-display.contentCenterX)*(player1.x-display.contentCenterX)+(player1.y-300)*(player1.y-300)) <= 20 )then
+          if(math.sqrt((player1.x-display.contentCenterX)*(player1.x-display.contentCenterX)+(player1.y-300)*(player1.y-300)) <= 20 and player1.hasKey == 1)then
               transition.to(lockTriggerOff,{alpha = 0})
               transition.to(lockTriggerOn,{alpha = 1})
               gate1.IsOpen = 1
@@ -275,6 +281,15 @@ function scene:show( event )
 					timer.performWithDelay ( 1, player1.speedUp )
 				end
 
+				if (self.myName == "key") then
+					self:removeSelf()
+					self.myName = nil
+					player1.hasKey = 1
+					audio.play(soundTable["key"],{
+				    channel = 7,
+					})
+				end
+
 				if (self.myName == "wallUp") then
 					local warning = display.newText("You can't go back, Captain.",display.contentCenterX, 250 )
 					warning:setFillColor(0.7,0.7,0.7,1)
@@ -293,6 +308,9 @@ function scene:show( event )
 				tri[i].postCollision = onLocalPostCollision
 				tri[i]:addEventListener( "postCollision", tri[i] )
 			end
+
+			key.postCollision = onLocalPostCollision
+			key:addEventListener( "postCollision", key )
 
 			wallUp.postCollision = onLocalPostCollision
 			wallUp:addEventListener( "postCollision", wallUp )
