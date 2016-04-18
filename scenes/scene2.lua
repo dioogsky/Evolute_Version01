@@ -159,11 +159,6 @@ function scene:show( event )
 				tri[2] = tri_new(200,750,10)
 				tri[3] = tri_new(300,380,5)
 
-				local wormHole1 = wormHole_new(10,500)
-				wormHole1.myName = "wormHole1"
-				local wormHole2 = wormHole_new(365,1200)
-				wormHole2.myName = "wormHole2"
-
 				local chaser1 = chaser_new(display.contentCenterX,display.contentCenterY-200,2.4)
 
 				for i = 1,#rect do
@@ -181,11 +176,6 @@ function scene:show( event )
 					sceneGroup:insert(tri[i])
 				end
 
-				camera:add(chaser1,1)
-				camera:add(wormHole1,1)
-				camera:add(wormHole2,1)
-				sceneGroup:insert(wormHole1)
-				sceneGroup:insert(wormHole2)
 				sceneGroup:insert(player1)
 				sceneGroup:insert(chaser1)
 				camera:add(sceneGroup)
@@ -211,13 +201,19 @@ function scene:show( event )
 				local soundTable={
 					bgm = audio.loadSound('sounds/deep_space.mp3'),
 					saw = audio.loadSound('sounds/saw.wav'),
-					warning = audio.loadSound('sounds/warning.mp3')
+					warning = audio.loadSound('sounds/warning.mp3'),
+					voiceover = audio.loadSound('sounds/Scene02.mp3')
 				}
 
 				audio.play(soundTable["bgm"],{
 			    channel = 1,
 			    loops = -1,
 			    fadein = 5000
+				})
+
+				audio.play(soundTable["voiceover"],{
+					channel = 2,
+					fadein = 1000
 				})
 
 				local pauseButton = display.newImage("img/pause.png",354,21)
@@ -245,19 +241,24 @@ function scene:show( event )
 		    		player1.move1()
 
 
-						if( saw[1].y-player1.y <= 300 )then
+						if( math.abs(saw[1].y-player1.y) <= 300 )then
 							audio.play(soundTable["saw"],{
-						    channel = 2,
+						    channel = 3,
 						    loops = -1 ,
 						    fadein = 10000
 							})
-						else
-							audio.stop(2)
+
 						end
 
-						if( player1.y-saw[1].y >= 300 )then
-							audio.fadeOut( { channel=2, time=1000 } )
+						if( math.abs(saw[3].y-player1.y) <= 300 )then
+							audio.play(soundTable["saw"],{
+								channel = 3,
+								loops = -1 ,
+								fadein = 10000
+							})
+
 						end
+
 
 		    		player_x = player1.x
 		        player_y = player1.y
@@ -274,28 +275,10 @@ function scene:show( event )
 							end
 						end
 						for i = 1,10 do
-							map[math.ceil(rect[i].y/_y)][math.ceil(rect[i].x/_x)]=1
-							map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+1)]=1
-							map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-1)]=1
-							map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+2)]=1
-							map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-2)]=1
-							map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+3)]=1
-							map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-3)]=1
-							map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+4)]=1
-							map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-4)]=1
-							map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+5)]=1
-							map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-5)]=1
-							map[math.ceil(rect[i].y/_y)-1][math.ceil(rect[i].x/_x)]=1
-							map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+1)]=1
-							map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)-1)]=1
-							map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+2)]=1
-							map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)-2)]=1
-							map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+3)]=1
-							map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)-3)]=1
-							map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+4)]=1
-							map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)-4)]=1
-							map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+5)]=1
-							map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)-5)]=1
+							for j = -5,5,1 do
+								map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+j)]=1
+								map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+j)]=1
+							end
 						end
 
 						-- Creates a grid object
@@ -343,6 +326,8 @@ function scene:show( event )
 							audio.stop(1)
 							audio.dispose( bgm )
 							audio.stop(2)
+							audio.dispose( voiceover )
+							audio.stop(3)
 							audio.dispose( saw )
 
 			    		local function myBackListener()
@@ -375,7 +360,10 @@ function scene:show( event )
 
 						audio.stop(1)
 						audio.dispose( bgm )
-						audio.pause(2)
+						audio.stop(2)
+						audio.dispose( voiceover )
+						audio.stop(3)
+						audio.dispose( saw )
 
 						pauseButton:removeSelf()
 						showMenu()
@@ -407,16 +395,6 @@ function scene:show( event )
 						player1.speedUp()
 					end
 
-					if (self.myName == "wormHole1") then
-						local translateObject = function()  event.other.x = 340 event.other.y = 1200 end
-						timer.performWithDelay(1,translateObject,1)
-					end
-
-					if (self.myName == "wormHole2") then
-						local translateObject = function()  event.other.x = 30 event.other.y = 500 end
-						timer.performWithDelay(1,translateObject,1)
-					end
-
 					if (self.myName == "saw" and event.other.name == "player") then
 						self.myName = nil
 						player1.stop()
@@ -435,6 +413,8 @@ function scene:show( event )
 						audio.stop(1)
 						audio.dispose( bgm )
 						audio.stop(2)
+						audio.dispose( voiceover )
+						audio.stop(3)
 						audio.dispose( saw )
 
 		    		local function myBackListener()
@@ -476,6 +456,8 @@ function scene:show( event )
 						audio.stop(1)
 						audio.dispose( bgm )
 						audio.stop(2)
+						audio.dispose( voiceover )
+						audio.stop(3)
 						audio.dispose( saw )
 
 		    			local function myBackListener()
@@ -508,11 +490,6 @@ function scene:show( event )
 				wallUp.postCollision = onLocalPostCollision
 				wallUp:addEventListener( "postCollision", wallUp )
 
-				wormHole1.postCollision = onLocalPostCollision
-				wormHole1:addEventListener( "postCollision", wormHole1 )
-
-				wormHole2.postCollision = onLocalPostCollision
-				wormHole2:addEventListener( "postCollision", wormHole2 )
 
 				for i = 1,#saw do
 				saw[i].postCollision = onLocalPostCollision

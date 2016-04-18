@@ -82,13 +82,19 @@ function scene:show( event )
 				local soundTable={
 					bgm = audio.loadSound('sounds/deep_space.mp3'),
 					saw = audio.loadSound('sounds/saw.wav'),
-					warning = audio.loadSound('sounds/warning.mp3')
+					warning = audio.loadSound('sounds/warning.mp3'),
+					voiceover = audio.loadSound('sounds/Scene04.mp3')
 				}
 
 				audio.play(soundTable["bgm"],{
 			    channel = 1,
 			    loops = -1,
 			    fadein = 5000
+				})
+
+				audio.play(soundTable["voiceover"],{
+					channel = 2,
+					fadein = 1000
 				})
 
 				local wallUp = display.newRect(display.contentCenterX,0,346,20)
@@ -182,28 +188,10 @@ function scene:show( event )
 						end
 					end
 					for i = 1,12 do
-						map[math.ceil(rect[i].y/_y)][math.ceil(rect[i].x/_x)]=1
-						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+1)]=1
-						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-1)]=1
-						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+2)]=1
-						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-2)]=1
-						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+3)]=1
-						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-3)]=1
-						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+4)]=1
-						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-4)]=1
-						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+5)]=1
-						map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)-5)]=1
-						map[math.ceil(rect[i].y/_y)-1][math.ceil(rect[i].x/_x)]=1
-						map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+1)]=1
-						map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)-1)]=1
-						map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+2)]=1
-						map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)-2)]=1
-						map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+3)]=1
-						map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)-3)]=1
-						map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+4)]=1
-						map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)-4)]=1
-						map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+5)]=1
-						map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)-5)]=1
+						for j = -5,5,1 do
+							map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+j)]=1
+							map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+j)]=1
+						end
 					end
 
 					-- Creates a grid object
@@ -254,7 +242,7 @@ function scene:show( event )
 						audio.stop(1)
 						audio.dispose( bgm )
 						audio.stop(2)
-						audio.dispose( saw )
+	          audio.dispose( voiceover )
 
 		    		local function myBackListener()
 		    				failbg:removeSelf()
@@ -283,6 +271,8 @@ function scene:show( event )
 
 					audio.stop(1)
 					audio.dispose( bgm )
+					audio.stop(2)
+          audio.dispose( voiceover )
 
 					pauseButton:removeSelf()
 					showMenu()
@@ -302,6 +292,8 @@ function scene:show( event )
 
 							audio.stop(1)
 							audio.dispose( bgm )
+							audio.stop(2)
+		          audio.dispose( voiceover )
 
 							local successbg = display.newRect(display.contentCenterX,display.contentCenterY,375,667)
 							successbg:setFillColor(0.53,0.85,0.16,0.7)

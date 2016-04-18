@@ -74,7 +74,8 @@ function scene:show( event )
 				local soundTable={
 					bgm = audio.loadSound('sounds/deep_space.mp3'),
 					saw = audio.loadSound('sounds/saw.wav'),
-					warning = audio.loadSound('sounds/warning.mp3')
+					warning = audio.loadSound('sounds/warning.mp3'),
+					voiceover = audio.loadSound('sounds/Scene01.mp3')
 				}
 
 				audio.play(soundTable["bgm"],{
@@ -82,6 +83,13 @@ function scene:show( event )
 			    loops = -1,
 			    fadein = 5000
 				})
+
+				audio.play(soundTable["voiceover"],{
+					channel = 2,
+					fadein = 1000
+				})
+
+				audio.setVolume( 0.15, { channel=2 } )
 
 				local wallUp = display.newRect(display.contentCenterX,0,346,20)
 	    	physics.addBody( wallUp,'static', { density=20, friction=0.5, bounce=0.3 } )
@@ -105,8 +113,8 @@ function scene:show( event )
 				camera:track() -- Begin auto-tracking
 
 				local tri = {}
-				for i=1,8 do
-						tri[i] = tri_new(math.random(2,9)*35,180*i,math.random(2,5))
+				for i=1,4 do
+						tri[i] = tri_new(math.random(2,9)*35,280*i+150,math.random(2,5))
 						camera:add(tri[i],1)
 						sceneGroup:insert(tri[i])
 				end
@@ -144,7 +152,7 @@ function scene:show( event )
 
 	    function myListener( event )
 
-	   			for i=1,8 do
+	   			for i=1,4 do
 					tri[i].rotate1()
 					end
 
@@ -173,6 +181,8 @@ function scene:show( event )
 
 					audio.stop(1)
 					audio.dispose( bgm )
+					audio.stop(2)
+					audio.dispose( voiceover )
 
 					pauseButton:removeSelf()
 					showMenu()
@@ -192,6 +202,8 @@ function scene:show( event )
 
 							audio.stop(1)
 							audio.dispose( bgm )
+							audio.stop(2)
+							audio.dispose( voiceover )
 
 							local successbg = display.newRect(display.contentCenterX,display.contentCenterY,375,667)
 							successbg:setFillColor(0.53,0.85,0.16,0.7)
@@ -224,6 +236,7 @@ function scene:show( event )
 				if (self.myName == "tri") then
 					self:removeSelf()
 					self.myName = nil
+					--local newTri = display.newRect(self.x,self.y,10,10)
 					timer.performWithDelay ( 1, player1.speedUp )
 				end
 
@@ -241,7 +254,7 @@ function scene:show( event )
 			end
 
 
-			for i=1,8 do
+			for i=1,4 do
 				tri[i].postCollision = onLocalPostCollision
 				tri[i]:addEventListener( "postCollision", tri[i] )
 			end
