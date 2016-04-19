@@ -20,10 +20,10 @@ local scene = composer.newScene()
 -- -------------------------------------------------------------------------------
 
 local function showMenu()
-	--local options = {
---		effect = 'crossFade',
---		time= 200
---	}
+	-- local options = {
+	-- 	effect = 'crossFade',
+	-- 	time= 200
+	-- }
 	composer.gotoScene("scenes.menu")
 
 end
@@ -32,10 +32,9 @@ end
 -- "scene:create()"
 function scene:create( event )
 
-    local sceneGroup = self.view
-	local logo = display.newImage('img/Start.png',display.contentCenterX,display.contentCenterY)
-	sceneGroup:insert(logo)
-	
+  local sceneGroup = self.view
+
+
     -- Initialize the scene here
     -- Example: add display objects to "sceneGroup", add touch listeners, etc.
 end
@@ -50,8 +49,27 @@ function scene:show( event )
     if ( phase == "will" ) then
         -- Called when the scene is still off screen (but is about to come on screen)
     elseif ( phase == "did" ) then
-    	
-    	timer.performWithDelay( 1000, showMenu )
+
+				local logo = display.newImage('img/Start.png',display.contentCenterX,display.contentCenterY)
+				-- local text = display.newText('>>> Tap here to start <<<',display.contentCenterX,570,"Lucida Grande",16)
+				-- text:setFillColor(0.68,0.68,0.68,0.001)
+				-- logo.myName = 'logo'
+				sceneGroup:insert(logo)
+				-- sceneGroup:insert(text)
+				--
+				-- local function onLogoTap( self, event )
+	    	timer.performWithDelay( 1000, showMenu )
+	    	-- 	return true
+				-- end
+				-- logo.tap = onLogoTap
+				-- logo:addEventListener( "tap", logo )
+				--
+				-- function myListener( event )
+	    	-- 	for i=0.001,1,0.001 do
+				-- 		text:setFillColor(0.68,0.68,0.68,i)
+				-- 	end
+				-- end
+				--Runtime:addEventListener( "enterFrame", myListener )
 
         -- Example: start timers, begin animation, play audio, etc.
     end
@@ -96,6 +114,3 @@ scene:addEventListener( "destroy", scene )
 -- -------------------------------------------------------------------------------
 
 return scene
-
-
-

@@ -23,7 +23,6 @@ local perspective = require("perspective")
 
 --local particleDesigner = require( "particleDesigner" )
 
-
 camera = perspective.createView()
 camera:setBounds(170, 205, 0, 2200)
 physics.start()

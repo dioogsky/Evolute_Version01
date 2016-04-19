@@ -15,9 +15,6 @@ function chaser_new (positon_x,position_y,speed)
   	chaser.speed = speed
   	physics.addBody( chaser, { density=2, friction=0.5, bounce=0.3 } )
 
-
-
-
 	return chaser
 end
 

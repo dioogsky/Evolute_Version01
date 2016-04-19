@@ -17,9 +17,6 @@ local scene = composer.newScene()
 local physics = require("physics")
 local perspective = require("perspective")
 
---local particleDesigner = require( "particleDesigner" )
-
-
 camera = perspective.createView()
 camera:setBounds(170, 205, 0, 2200)
 physics.start()
@@ -34,11 +31,10 @@ physics.setGravity( 0, 0 )
 -- -------------------------------------------------------------------------------
 
 local function showMenu()
-	--local options = {
---		effect = 'crossFade',
---		time= 200
---	}
-	--scene:hide
+	-- local options = {
+	-- 	effect = 'crossFade',
+	-- 	time= 2000
+	-- }
 	composer.gotoScene("scenes.menu")
 end
 
@@ -52,14 +48,9 @@ function scene:create( event )
 	  local wallLeft = wall_new(5,600)
 	  local wallRight = wall_new(373, 600)
 
-		camera:add(wallLeft,1)
-		camera:add(wallRight,1)
 		sceneGroup:insert(bg)
 		sceneGroup:insert(wallLeft)
 		sceneGroup:insert(wallRight)
-
-    -- Initialise the scene here
-    -- Example: add display objects to "sceneGroup", add touch listeners, etc.
 end
 
 -- "scene:show()"
@@ -70,7 +61,7 @@ function scene:show( event )
     if ( phase == "will" ) then
     -- Called when the scene is still off screen (but is about to come on screen)
     elseif ( phase == "did" ) then
-
+				-- create a sound table
 				local soundTable={
 					bgm = audio.loadSound('sounds/deep_space.mp3'),
 					saw = audio.loadSound('sounds/saw.wav'),
@@ -91,11 +82,13 @@ function scene:show( event )
 
 				audio.setVolume( 0.15, { channel=2 } )
 
+				-- set a wall at the top the game area
 				local wallUp = display.newRect(display.contentCenterX,0,346,20)
 	    	physics.addBody( wallUp,'static', { density=20, friction=0.5, bounce=0.3 } )
 				wallUp: setFillColor(0,0,0,0)
 				wallUp.myName = "wallUp"
 
+				-- set the destination
 				local missionPoint = display.newImage('img/missionPoint.png',display.contentCenterX,1660)
 				local missionPointTrigger = display.newRect(display.contentCenterX,1660,400,10)
 				missionPointTrigger:setFillColor(0,0,0,0)
@@ -104,6 +97,7 @@ function scene:show( event )
 				sceneGroup:insert(missionPoint)
 				sceneGroup:insert(missionPointTrigger)
 
+				-- create a player
 	    	local player1 = player_new(display.contentCenterX,display.contentCenterY,2,0.38,0.38,0.38)
 				camera:add(player1, 1) -- Add player to layer 1 of the camera
 				camera:setFocus(player1)
@@ -112,6 +106,7 @@ function scene:show( event )
 				camera:setFocus(player1) -- Set the focus to the player
 				camera:track() -- Begin auto-tracking
 
+				-- create several power-ups in random place
 				local tri = {}
 				for i=1,4 do
 						tri[i] = tri_new(math.random(2,9)*35,280*i+150,math.random(2,5))
@@ -119,6 +114,7 @@ function scene:show( event )
 						sceneGroup:insert(tri[i])
 				end
 
+				-- create several moving obstacles
 				local rect = {}
 				for i=1,12 do
 						rect[i] = rect_new(display.contentCenterX,i*130,1)
@@ -127,9 +123,10 @@ function scene:show( event )
 						sceneGroup:insert(rect[i])
 				end
 
-			sceneGroup:insert(player1)
-			camera:add(sceneGroup)
+				sceneGroup:insert(player1)
+				camera:add(sceneGroup)
 
+			-- touch event
 	    function myTouchListener( event )
 
 	   	    if event.phase == "began" then
@@ -150,6 +147,7 @@ function scene:show( event )
 		    	end
 			end
 
+			-- frame event
 	    function myListener( event )
 
 	   			for i=1,4 do
@@ -174,6 +172,7 @@ function scene:show( event )
 		   		end
 			end
 
+			-- the pause button
 			local pauseButton = display.newImage("img/pause.png",354,21)
 			local function myPauseListener()
 					dist_x = nil
@@ -193,6 +192,7 @@ function scene:show( event )
 			end
 			pauseButton:addEventListener("tap",myPauseListener)
 
+			-- collision detection
 			function onLocalPostCollision( self, event )
 
 					if (self.myName == "missionPointTrigger") then
@@ -253,7 +253,7 @@ function scene:show( event )
 				return true
 			end
 
-
+			-- add event listener
 			for i=1,4 do
 				tri[i].postCollision = onLocalPostCollision
 				tri[i]:addEventListener( "postCollision", tri[i] )
