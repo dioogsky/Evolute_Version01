@@ -12,7 +12,7 @@ local wall = require('classes.wall')
 local wormHole = require('classes.wormHole')
 local player = require('classes.player')
 local chaser = require('classes.chaser')
-local map = require('classes.map')
+local map = require('classes.mapfor02')
 local saw = require('classes.saw')
 local scene = composer.newScene()
 local physics = require("physics")
@@ -266,24 +266,20 @@ function scene:show( event )
 		   				timer.performWithDelay ( 3000, player1.speedDown )
 		   			end
 
-						_x = 375/30
-						_y = 667/100
-						-- _x = 375/10
-						-- _y = 667/50
-						for i = 1,256 do
-							for j = 1,30 do
+						_x = 375/10
+						_y = 667/60
+
+						for i = 1,#map do
+							for j = 1,15 do
 								map[i][j]=0
 							end
 						end
-						-- for i = 1,#map do
-						-- 	for j = 1,15 do
-						-- 		map[i][j]=0
-						-- 	end
-						-- end
+						-- update the map
 						for i = 1,#rect do
-							for j = -5,5,1 do
-								map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+j)]=1
-								map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+j)]=1
+							for j = -1,1,1 do
+								map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+j)] = 1 --1 means unwalkable
+								map[math.ceil(rect[i].y/_y)+1][math.ceil((rect[i].x/_x)+j)] = 1
+								map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+j)] = 1
 							end
 						end
 
@@ -292,7 +288,7 @@ function scene:show( event )
 						local movePath = {}
 						-- Creates a pathfinder object using Jump Point Search algorithm
 						local myFinder = Pathfinder(grid, 'ASTAR', walkable)
-						--myFinder:clearAnnotations()
+						myFinder:clearAnnotations()
 						--print(chaser1.x)
 						local startx, starty = math.ceil(chaser1.x/_x),math.ceil(chaser1.y/_y)
 						local endx, endy = math.ceil(player1.x/_x),math.ceil(player1.y/_y)
@@ -302,19 +298,18 @@ function scene:show( event )
 							--print(('Path found! Length: %.2f'):format(path:getLength()))
 							timer.performWithDelay ( 1,function ()
 									for node, count in path:nodes() do
-									--print(('Step%d -- x: %d , y: %d'):format(count, node:getX(), node:getY()))
 										movePath[count] = { x=node:getX(), y=node:getY() }
 									end
 									--print(movePath[2].x,movePath[2].y )
 									local a = math.sqrt((movePath[3].x*_x - chaser1.x)^2+(movePath[3].y*_y - chaser1.y)^2)
 									--print (a)
-									chaser1.x = chaser1.x + 2.6*(movePath[3].x*_x - chaser1.x)/a
-									chaser1.y = chaser1.y + 2.6*(movePath[3].y*_y - chaser1.y)/a
+									chaser1.x = chaser1.x + 2.2*(movePath[3].x*_x - chaser1.x)/a
+									chaser1.y = chaser1.y + 2.2*(movePath[3].y*_y - chaser1.y)/a
 									--transition.to(chaser1,{x=movePath[3].x*_x, y=movePath[3].y*_y,time =115})
 								end )
 						end
 
-						if ((math.sqrt((player1.x-chaser1.x)^2 +(player1.y-chaser1.y)^2)) <= 25) then
+						if ((math.sqrt((player1.x-chaser1.x)^2 +(player1.y-chaser1.y)^2)) <= 30) then
 							player1.stop()
 							player1.isStop = 1
 							pauseButton:removeSelf()
