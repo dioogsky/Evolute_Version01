@@ -267,7 +267,7 @@ function scene:show( event )
 		   			end
 
 						_x = 375/10
-						_y = 667/60
+						_y = 667/27
 
 						for i = 1,#map do
 							for j = 1,15 do
