@@ -18,6 +18,7 @@ function player_new (positon_x,position_y,speed,r,g,b)
 	player.isSpeedUp = 0
 	player.isStop = 0
   player.hasKey = 0
+  player.isMovingUp = 0
 	physics.addBody( player, { density=2, friction=0.5, bounce=0.3 } )
 
 --  local trackPoint = {}
@@ -28,18 +29,22 @@ function player_new (positon_x,position_y,speed,r,g,b)
         player.y=player.y
     elseif(touch_x >= display.contentCenterX and touch_y >= display.contentCenterY) then
          trackPoint()
+         timer.performWithDelay( 300, function() player.isMovingUp = 0 end)
          player.y=player.y+dist_y
          player.x=player.x+dist_x
     elseif(touch_x <= display.contentCenterX and touch_y >= display.contentCenterY) then
         trackPoint()
+        timer.performWithDelay( 300, function() player.isMovingUp = 0 end)
         player.y=player.y+dist_y
         player.x=player.x+dist_x
     elseif(touch_x <= display.contentCenterX and touch_y <= display.contentCenterY ) then
         trackPoint()
+        timer.performWithDelay( 300, function() player.isMovingUp = 1 end)
         player.y=player.y-dist_y
         player.x=player.x-dist_x
     elseif(touch_x >= display.contentCenterX and touch_y <= display.contentCenterY ) then
         trackPoint()
+        timer.performWithDelay( 300, function() player.isMovingUp = 1 end)
         player.y=player.y-dist_y
         player.x=player.x-dist_x
     end

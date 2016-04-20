@@ -113,11 +113,13 @@ function scene:show( event )
 				local saw = {}
 				local tri = {}
 
-		    rect[1] = rect_new(display.contentCenterX,500,1)
-		    transition.to( rect[1], { alpha = 1,time = 250,delay = 50 })
 
-				rect[2] = rect_new(display.contentCenterX,600,1)
-				transition.to( rect[2], { alpha = 1,time = 250,delay = 150 })
+				for i=1,2 do
+						rect[i] = rect_new(display.contentCenterX,i*100+390,1)
+						transition.to( rect[i], { alpha = 1,time = 250,delay = 100*i })
+						sceneGroup:insert(rect[i])
+				end
+
 
 				saw[1] = saw_new(display.contentCenterX,700,20)
 				transition.to( saw[1], { alpha = 1,time = 250,delay = 250 })
@@ -125,29 +127,12 @@ function scene:show( event )
 				saw[2] = saw_new(display.contentCenterX,800,20)
 				transition.to( saw[2], { alpha = 1,time = 250,delay = 350 })
 
-				rect[3] = rect_new(display.contentCenterX,900,1)
-		    transition.to( rect[3], { alpha = 1,time = 250,delay = 450 })
+				for i=3,10 do
+						rect[i] = rect_new(display.contentCenterX,i*100+590,1)
+						transition.to( rect[i], { alpha = 1,time = 250,delay = 100*i })
+						sceneGroup:insert(rect[i])
+				end
 
-				rect[4] = rect_new(display.contentCenterX,1000,1)
-				transition.to( rect[4], { alpha = 1,time = 250,delay = 550 })
-
-				rect[5] = rect_new(display.contentCenterX,1100,1)
-				transition.to( rect[5], { alpha = 1,time = 250,delay = 650 })
-
-				rect[6] = rect_new(display.contentCenterX,1200,1)
-				transition.to( rect[6], { alpha = 1,time = 250,delay = 750 })
-
-				rect[7] = rect_new(display.contentCenterX,1300,1)
-				transition.to( rect[7], { alpha = 1,time = 250,delay = 850 })
-
-				rect[8] = rect_new(display.contentCenterX,1400,1)
-				transition.to( rect[8], { alpha = 1,time = 250,delay = 850 })
-
-				rect[9] = rect_new(display.contentCenterX,1500,1)
-				transition.to( rect[9], { alpha = 1,time = 250,delay = 850 })
-
-				rect[10] = rect_new(display.contentCenterX,1600,1)
-				transition.to( rect[10], { alpha = 1,time = 250,delay = 850 })
 
 				saw[3] = saw_new(display.contentCenterX,1250,20)
 				transition.to( saw[3], { alpha = 1,time = 250,delay = 700 })
@@ -266,20 +251,30 @@ function scene:show( event )
 		   				timer.performWithDelay ( 3000, player1.speedDown )
 		   			end
 
-						_x = 375/10
-						_y = 667/27
+						_x = 375/20
+						_y = 667/26
 
-						for i = 1,#map do
-							for j = 1,15 do
+						for i = 1,180 do
+							for j = 1,20 do
 								map[i][j]=0
 							end
 						end
 						-- update the map
 						for i = 1,#rect do
-							for j = -1,1,1 do
-								map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+j)] = 1 --1 means unwalkable
-								map[math.ceil(rect[i].y/_y)+1][math.ceil((rect[i].x/_x)+j)] = 1
-								map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+j)] = 1
+							for j = -3,3,1 do
+								--map[math.ceil(rect[i].y/_y)][math.ceil((rect[i].x/_x)+j)] = 1 --1 means unwalkable
+								map[math.round(rect[i].y/_y)][math.round((rect[i].x/_x)+j)] = 1
+								-- local rect = display.newRect(math.round((rect[i].x/_x)+j)*_x,math.round(rect[i].y/_y)*_y,_x,_y)
+								-- sceneGroup:insert(rect)
+								--map[math.ceil(rect[i].y/_y)-1][math.ceil((rect[i].x/_x)+j)] = 1
+							end
+						end
+
+						for i = 1,#saw do
+							for j = -2,2,1 do
+								map[math.round(saw[i].y/_y)][math.round((saw[i].x/_x)+j)] = 1
+								--map[math.round(saw[i].y/_y+1)][math.round((saw[i].x/_x)+j)] = 1
+								--map[math.round(saw[i].y/_y)-1][math.round((saw[i].x/_x)+j)] = 1
 							end
 						end
 
@@ -290,26 +285,47 @@ function scene:show( event )
 						local myFinder = Pathfinder(grid, 'ASTAR', walkable)
 						myFinder:clearAnnotations()
 						--print(chaser1.x)
-						local startx, starty = math.ceil(chaser1.x/_x),math.ceil(chaser1.y/_y)
-						local endx, endy = math.ceil(player1.x/_x),math.ceil(player1.y/_y)
+						local startx, starty = math.round(chaser1.x/_x),math.round(chaser1.y/_y)
+						--local endx, endy = 14,25
+						if(player1.isMovingUp == 0) then
+							if(math.floor(player1.x/_x) >=1 ) then
+								endx, endy = math.floor(player1.x/_x),math.floor(player1.y/_y)
+							elseif(math.floor(player1.x/_x) == 0) then
+								endx, endy = 1,math.floor(player1.y/_y)
+							end
+						elseif(player1.isMovingUp == 1)then
+							if(math.floor(player1.x/_x) >=1 ) then
+							endx, endy = math.ceil(player1.x/_x),math.ceil(player1.y/_y)
+							elseif(math.floor(player1.x/_x) == 0) then
+							endx, endy = 1,math.ceil(player1.y/_y)
+							end
+						end
+
+						local rect = display.newRect(endx*_x,endy*_y,10,10)
+						sceneGroup:insert(rect)
 						local path = myFinder:getPath(startx, starty, endx, endy)
 
 						if path then
-							--print(('Path found! Length: %.2f'):format(path:getLength()))
+							print(('Path found! Length: %.2f'):format(path:getLength()))
 							timer.performWithDelay ( 1,function ()
 									for node, count in path:nodes() do
 										movePath[count] = { x=node:getX(), y=node:getY() }
 									end
 									--print(movePath[2].x,movePath[2].y )
-									local a = math.sqrt((movePath[3].x*_x - chaser1.x)^2+(movePath[3].y*_y - chaser1.y)^2)
-									--print (a)
-									chaser1.x = chaser1.x + 2.2*(movePath[3].x*_x - chaser1.x)/a
-									chaser1.y = chaser1.y + 2.2*(movePath[3].y*_y - chaser1.y)/a
-									--transition.to(chaser1,{x=movePath[3].x*_x, y=movePath[3].y*_y,time =115})
+									if(movePath[3])then
+										local a = math.sqrt((movePath[3].x*_x - chaser1.x)^2+(movePath[3].y*_y - chaser1.y)^2)
+										chaser1.x = chaser1.x + 1.6*(movePath[3].x*_x - chaser1.x)/a
+										chaser1.y = chaser1.y + 1.6*(movePath[3].y*_y - chaser1.y)/a
+										--transition.to(chaser1,{x=movePath[3].x*_x, y=movePath[3].y*_y,time =115})
+									elseif(movePath[2])then
+										local a = math.sqrt((movePath[2].x*_x - chaser1.x)^2+(movePath[2].y*_y - chaser1.y)^2)
+										chaser1.x = chaser1.x + 2.0*(movePath[2].x*_x - chaser1.x)/a
+										chaser1.y = chaser1.y + 2.0*(movePath[2].y*_y - chaser1.y)/a
+									end
 								end )
 						end
 
-						if ((math.sqrt((player1.x-chaser1.x)^2 +(player1.y-chaser1.y)^2)) <= 30) then
+						if ((math.sqrt((player1.x-chaser1.x)^2 +(player1.y-chaser1.y)^2)) <= _y+1) then
 							player1.stop()
 							player1.isStop = 1
 							pauseButton:removeSelf()
